@@ -2,8 +2,10 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var audioEngine = AudioEngine()
+    @State private var showMixer = false
 
     var body: some View {
+        @Bindable var engine = audioEngine
         ZStack {
             // Minimalist solid black background
             Color.black
@@ -252,31 +254,99 @@ struct ContentView: View {
             }
             .ignoresSafeArea()
 
-             // Play / Stop button in the absolute geometric center (square, no text)
-             Button(action: {
-                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                     audioEngine.toggle()
-                 }
-             }) {
-                 Image(systemName: audioEngine.isPlaying ? "stop.fill" : "play.fill")
-                     .font(.system(size: 16, weight: .bold))
-                     .contentTransition(.symbolEffect(.replace))
-                     .foregroundColor(audioEngine.isPlaying ? .black : .white)
-                     .frame(width: 48, height: 48)
-                     .background(
-                         Group {
-                             if audioEngine.isPlaying {
-                                 Rectangle()
-                                     .fill(Color.white)
-                             } else {
-                                 Rectangle()
-                                     .strokeBorder(Color.white, lineWidth: 1.5)
-                                     .background(Rectangle().fill(Color.black)) // prevent showing pixel grid lines under transparent button
-                             }
-                         }
-                     )
-             }
-             .buttonStyle(.plain)
+            // Play / Stop button in the absolute geometric center (square, no text)
+            Button(action: {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    audioEngine.toggle()
+                }
+            }) {
+                Image(systemName: audioEngine.isPlaying ? "stop.fill" : "play.fill")
+                    .font(.system(size: 16, weight: .bold))
+                    .contentTransition(.symbolEffect(.replace))
+                    .foregroundColor(audioEngine.isPlaying ? .black : .white)
+                    .frame(width: 48, height: 48)
+                    .background(
+                        Group {
+                            if audioEngine.isPlaying {
+                                Rectangle()
+                                    .fill(Color.white)
+                            } else {
+                                Rectangle()
+                                    .strokeBorder(Color.white, lineWidth: 1.5)
+                                    .background(Rectangle().fill(Color.black)) // prevent showing pixel grid lines under transparent button
+                            }
+                        }
+                    )
+            }
+            .buttonStyle(.plain)
+
+            // Bottom-right Mixer Toggle Button
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            showMixer.toggle()
+                        }
+                    }) {
+                        Image(systemName: "slider.horizontal.3")
+                            .font(.system(size: 15))
+                            .foregroundColor(.white.opacity(showMixer ? 1.0 : 0.6))
+                            .frame(width: 32, height: 32)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(showMixer ? Color.white.opacity(0.15) : Color.clear)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .padding(16)
+                }
+            }
+
+            // Slide-up Mixer Panel
+            if showMixer {
+                VStack(spacing: 12) {
+                    HStack {
+                        Text("MIXER")
+                            .font(.system(size: 10, weight: .black, design: .monospaced))
+                            .foregroundColor(.white.opacity(0.8))
+                            .kerning(1.5)
+                        Spacer()
+                        Button(action: {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                showMixer = false
+                            }
+                        }) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    VStack(spacing: 8) {
+                        MixerSlider(icon: "waveform", label: "BINAURAL BEATS", value: $engine.oscVolume)
+                        MixerSlider(icon: "wind", label: "PINK NOISE", value: $engine.noiseVolume)
+                        MixerSlider(icon: "music.note", label: "AMBIENT SYNTH", value: $engine.melodyVolume)
+                        MixerSlider(icon: "circle.circle", label: "LO-FI DRUMS", value: $engine.drumsVolume)
+                    }
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.black.opacity(0.85))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                )
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .zIndex(2)
+            }
         }
         .frame(width: 400, height: 400)
         .background(WindowAccessor { window in
@@ -350,6 +420,36 @@ struct WindowAccessor: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+struct MixerSlider: View {
+    let icon: String
+    let label: String
+    @Binding var value: Double
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 13))
+                .foregroundColor(.white.opacity(0.6))
+                .frame(width: 20, alignment: .center)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                HStack {
+                    Text(label)
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.5))
+                    Spacer()
+                    Text("\(Int(value * 100))%")
+                        .font(.system(size: 9, weight: .medium, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.6))
+                }
+                
+                Slider(value: $value, in: 0...1)
+                    .accentColor(.white)
+            }
+        }
+    }
 }
 
 #Preview {

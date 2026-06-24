@@ -124,6 +124,20 @@ final class AudioEngine: @unchecked Sendable {
     private(set) var snareLevel: Double = 0.0
     private(set) var hatLevel: Double = 0.0
 
+    /// Volumes for each sound source (0...1)
+    var oscVolume: Double = 0.25 {
+        didSet { oscNode?.volume = Float(oscVolume) }
+    }
+    var noiseVolume: Double = 0.15 {
+        didSet { noiseNode?.volume = Float(noiseVolume) }
+    }
+    var melodyVolume: Double = 1.0 {
+        didSet { melodyNode?.volume = Float(melodyVolume) }
+    }
+    var drumsVolume: Double = 0.20 {
+        didSet { drumNode?.volume = Float(drumsVolume) }
+    }
+
     // MARK: - Private Audio Graph
 
     private let engine = AVAudioEngine()
@@ -786,10 +800,11 @@ final class AudioEngine: @unchecked Sendable {
         engine.connect(melody, to: mixer, format: stereoFormat)
         engine.connect(drums, to: mixer, format: stereoFormat)
 
-        // Adjust connection volumes like a mixer (75% reduction for oscillators, and further reduction for pink noise)
-        osc.volume = 0.25
-        noise.volume = 0.15
-        drums.volume = 0.20 // Cozy background volume
+        // Set initial node volumes from public properties
+        osc.volume = Float(oscVolume)
+        noise.volume = Float(noiseVolume)
+        melody.volume = Float(melodyVolume)
+        drums.volume = Float(drumsVolume)
 
         // Disconnect default mixer→output, insert reverb in between
         engine.disconnectNodeOutput(mixer)
