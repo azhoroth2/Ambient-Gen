@@ -40,7 +40,7 @@ struct ContentView: View {
             }
             .buttonStyle(.plain)
         }
-        .frame(width: 160, height: 160)
+        .frame(width: 400, height: 400)
     }
 }
 
