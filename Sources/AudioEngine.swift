@@ -62,6 +62,26 @@ final class MelodyState: @unchecked Sendable {
     var flutterPhase: Double = 0.0
 }
 
+/// Shared state for the generative procedural drums.
+final class DrumState: @unchecked Sendable {
+    var kickTime: Double = -1.0
+    var kickPhase: Double = 0.0
+    
+    var snareTime: Double = -1.0
+    var snarePhase: Double = 0.0
+    
+    var hatTime: Double = -1.0
+    var hatLastNoise: Double = 0.0
+    var hatVolume: Double = 0.0
+    
+    // Step sequencer: starts after a ~2s initial delay
+    var samplesUntilNextStep: Int = 88200
+    var currentStep: Int = 0
+    
+    // PRNG for snare and hat noise
+    var rngState: UInt64 = 0x5678_ABCD_1234_EF01
+}
+
 /// Real-time binaural-beat audio engine with pink noise and LFO.
 ///
 /// Signal chain:
@@ -97,6 +117,7 @@ final class AudioEngine: @unchecked Sendable {
     private var oscNode: AVAudioSourceNode?
     private var noiseNode: AVAudioSourceNode?
     private var melodyNode: AVAudioSourceNode?
+    private var drumNode: AVAudioSourceNode?
     private let reverb = AVAudioUnitReverb()
 
     // MARK: - DSP State (shared with render thread)
@@ -104,6 +125,7 @@ final class AudioEngine: @unchecked Sendable {
     private let dsp = DSPState()
     private let noiseDsp = PinkNoiseState()
     private let melodyDsp = MelodyState()
+    private let drumDsp = DrumState()
     private var fadeTask: Task<Void, Never>?
 
     /// Amplitude ramp speed per sample. At 44100 Hz, ~20 ms ramp ≈ 882 samples.
@@ -192,6 +214,11 @@ final class AudioEngine: @unchecked Sendable {
             dsp.currentAmplitude = 0.0
             self.currentLevel = 0.0
             self.activeVoices = []
+            self.drumDsp.kickTime = -1.0
+            self.drumDsp.snareTime = -1.0
+            self.drumDsp.hatTime = -1.0
+            self.drumDsp.currentStep = 0
+            self.drumDsp.samplesUntilNextStep = 88200
         }
     }
 
@@ -512,16 +539,124 @@ final class AudioEngine: @unchecked Sendable {
             return noErr
         }
 
-        // ── 4. Reverb ───────────────────────────────────────────────
+        // ── 4. Drum node (stereo, procedural lo-fi beats) ───────────
+
+        let drumDsp = self.drumDsp
+
+        let drums = AVAudioSourceNode { _, _, frameCount, audioBufferList -> OSStatus in
+            let abl = UnsafeMutableAudioBufferListPointer(audioBufferList)
+
+            for frame in 0..<Int(frameCount) {
+                // 1. Sequencer step timing
+                drumDsp.samplesUntilNextStep -= 1
+                if drumDsp.samplesUntilNextStep <= 0 {
+                    drumDsp.samplesUntilNextStep = 8269 // 16th step at 80 BPM
+                    
+                    let step = drumDsp.currentStep
+                    
+                    // Trigger Kick
+                    // Boom-bap pattern: steps 0, 8, 10
+                    if step == 0 || step == 8 || step == 10 {
+                        drumDsp.kickTime = 0.0
+                        drumDsp.kickPhase = 0.0
+                    }
+                    
+                    // Trigger Snare
+                    // Boom-bap pattern: steps 4, 12
+                    if step == 4 || step == 12 {
+                        drumDsp.snareTime = 0.0
+                        drumDsp.snarePhase = 0.0
+                    }
+                    
+                    // Trigger Hi-Hat
+                    // Accent on beat (steps 0, 4, 8, 12)
+                    if step % 2 == 0 {
+                        drumDsp.hatTime = 0.0
+                        let randomVol = 0.03 + Self.nextRandomUnit(&drumDsp.rngState) * 0.015
+                        drumDsp.hatVolume = (step % 4 == 0) ? 0.06 : randomVol
+                    }
+                    
+                    drumDsp.currentStep = (step + 1) % 16
+                }
+                
+                // 2. Synthesize instruments
+                var sample: Float = 0.0
+                
+                // Kick drum synthesis
+                if drumDsp.kickTime >= 0.0 {
+                    // Exponential pitch sweep from 150Hz to 48Hz
+                    let freq = 48.0 + 102.0 * exp(-drumDsp.kickTime * 45.0)
+                    drumDsp.kickPhase += 2.0 * Double.pi * freq / sampleRate
+                    let kickVal = sin(drumDsp.kickPhase)
+                    let kickEnv = exp(-drumDsp.kickTime * 18.0)
+                    sample += Float(kickVal * kickEnv * 0.22)
+                    
+                    drumDsp.kickTime += 1.0 / sampleRate
+                    if drumDsp.kickTime > 0.22 {
+                        drumDsp.kickTime = -1.0
+                    }
+                }
+                
+                // Snare drum synthesis
+                if drumDsp.snareTime >= 0.0 {
+                    // Low tone body (185 Hz)
+                    drumDsp.snarePhase += 2.0 * Double.pi * 185.0 / sampleRate
+                    let snareVal = sin(drumDsp.snarePhase)
+                    let bodyEnv = exp(-drumDsp.snareTime * 38.0)
+                    
+                    // Snare white noise rattle
+                    let noiseVal = Self.nextRandom(&drumDsp.rngState)
+                    let noiseEnv = exp(-drumDsp.snareTime * 14.0)
+                    
+                    // Mix body and noise
+                    let snareMix = snareVal * bodyEnv * 0.35 + noiseVal * noiseEnv * 0.65
+                    sample += Float(snareMix * 0.12)
+                    
+                    drumDsp.snareTime += 1.0 / sampleRate
+                    if drumDsp.snareTime > 0.25 {
+                        drumDsp.snareTime = -1.0
+                    }
+                }
+                
+                // Hi-Hat synthesis
+                if drumDsp.hatTime >= 0.0 {
+                    let noiseVal = Self.nextRandom(&drumDsp.rngState)
+                    // High-pass filter (DC blocker difference)
+                    let hatVal = noiseVal - drumDsp.hatLastNoise
+                    drumDsp.hatLastNoise = noiseVal
+                    
+                    let hatEnv = exp(-drumDsp.hatTime * 85.0)
+                    sample += Float(hatVal * hatEnv * drumDsp.hatVolume)
+                    
+                    drumDsp.hatTime += 1.0 / sampleRate
+                    if drumDsp.hatTime > 0.05 {
+                        drumDsp.hatTime = -1.0
+                    }
+                }
+                
+                // Write mono sample to stereo output buffers
+                if abl.count >= 2 {
+                    let leftPtr = abl[0].mData?.assumingMemoryBound(to: Float.self)
+                    let rightPtr = abl[1].mData?.assumingMemoryBound(to: Float.self)
+                    leftPtr?[frame] = sample
+                    rightPtr?[frame] = sample
+                }
+            }
+            return noErr
+        }
+
+        // ── 5. Reverb ───────────────────────────────────────────────
 
         reverb.loadFactoryPreset(.largeChamber)
         reverb.wetDryMix = 55
 
-        // ── 5. Wire the graph ───────────────────────────────────────
+        // ── 6. Wire the graph ───────────────────────────────────────
         //
         //   osc  ──→ mainMixer ←── noise
         //                ↑
         //              melody
+        //                ↑
+        //              drums
         //                │
         //             reverb
         //                │
@@ -532,15 +667,18 @@ final class AudioEngine: @unchecked Sendable {
         engine.attach(osc)
         engine.attach(noise)
         engine.attach(melody)
+        engine.attach(drums)
         engine.attach(reverb)
 
         engine.connect(osc, to: mixer, format: stereoFormat)
         engine.connect(noise, to: mixer, format: stereoFormat)
         engine.connect(melody, to: mixer, format: stereoFormat)
+        engine.connect(drums, to: mixer, format: stereoFormat)
 
         // Adjust connection volumes like a mixer (75% reduction for oscillators, and further reduction for pink noise)
         osc.volume = 0.25
         noise.volume = 0.15
+        drums.volume = 0.20 // Cozy background volume
 
         // Disconnect default mixer→output, insert reverb in between
         engine.disconnectNodeOutput(mixer)
@@ -550,6 +688,7 @@ final class AudioEngine: @unchecked Sendable {
         oscNode = osc
         noiseNode = noise
         melodyNode = melody
+        drumNode = drums
 
         // Install tap to measure real-time amplitude of the final output (post-reverb)
         reverb.installTap(onBus: 0, bufferSize: 1024, format: stereoFormat) { [weak self] buffer, time in
