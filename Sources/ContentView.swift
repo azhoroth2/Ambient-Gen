@@ -70,14 +70,36 @@ struct ContentView: View {
                             let vu = u + sin(time * 35.0 + distance * 0.1) * shimmerAmt
                             let vv = v + cos(time * 35.0 + distance * 0.1) * shimmerAmt
                             
+                            // Slow organic warp LFO to bend the lines gently over time
+                            let warpTime = time * 0.5
+                            let wu = vu + sin(vv * Double.pi * 1.5 + warpTime) * 0.03 * melodyActivity
+                            let wv = vv + cos(vu * Double.pi * 1.5 + warpTime) * 0.03 * melodyActivity
+                            
                             for voice in activeVoices {
                                 let env = voice.envelopeValue
                                 if env > 0.01 {
-                                    let (n, m) = getChladniModes(frequency: voice.frequency)
-                                    // Chladni square plate resonance formula:
-                                    // cos(n * pi * x) * cos(m * pi * y) - cos(m * pi * x) * cos(n * pi * y)
-                                    let val = cos(n * Double.pi * vu) * cos(m * Double.pi * vv) -
-                                              cos(m * Double.pi * vu) * cos(n * Double.pi * vv)
+                                    let (n, m, style) = getChladniParameters(frequency: voice.frequency)
+                                    
+                                    // Slow time-based LFO to drift the modes slightly (adds fluid organic morphing)
+                                    let nMod = n + sin(time * 0.4) * 0.12
+                                    let mMod = m + cos(time * 0.3) * 0.12
+                                    
+                                    let val: Double
+                                    switch style {
+                                    case 0:
+                                        val = cos(nMod * Double.pi * wu) * cos(mMod * Double.pi * wv) -
+                                              cos(mMod * Double.pi * wu) * cos(nMod * Double.pi * wv)
+                                    case 1:
+                                        val = cos(nMod * Double.pi * wu) * cos(mMod * Double.pi * wv) +
+                                              cos(mMod * Double.pi * wu) * cos(nMod * Double.pi * wv)
+                                    case 2:
+                                        val = sin(nMod * Double.pi * wu) * sin(mMod * Double.pi * wv) -
+                                              sin(mMod * Double.pi * wu) * sin(nMod * Double.pi * wv)
+                                    default:
+                                        val = cos(nMod * Double.pi * wu) * sin(mMod * Double.pi * wv) -
+                                              sin(mMod * Double.pi * wu) * cos(nMod * Double.pi * wv)
+                                    }
+                                    
                                     chladniVal += val * env
                                     activeWeight += env
                                 }
@@ -173,28 +195,25 @@ struct ContentView: View {
         .frame(width: 400, height: 400)
     }
 
-    /// Determines Chladni plate vibration modes based on the active melody frequency.
-    private func getChladniModes(frequency: Double) -> (n: Double, m: Double) {
-        if frequency <= 0 { return (2, 2) }
-        // Map frequencies to specific Chladni resonances
-        // Low octaves/frequencies get simpler shapes, high ones get more complex grids
-        if frequency < 100 {
-            return (2.0, 3.0)
-        } else if frequency < 140 { // C3 range (~130 Hz)
-            return (3.0, 2.0)
-        } else if frequency < 155 { // D3 range (~146 Hz)
-            return (4.0, 2.0)
-        } else if frequency < 180 { // E3 range (~165 Hz)
-            return (3.0, 5.0)
-        } else if frequency < 210 { // G3 range (~196 Hz)
-            return (5.0, 4.0)
-        } else if frequency < 250 { // A3 range (~220 Hz)
-            return (6.0, 2.0)
-        } else if frequency < 350 { // Octave up notes
-            return (5.0, 5.0)
-        } else {
-            return (7.0, 3.0)
+    /// Determines Chladni plate vibration modes and formula style procedurally based on active melody frequency.
+    private func getChladniParameters(frequency: Double) -> (n: Double, m: Double, style: Int) {
+        if frequency <= 0 { return (2.0, 3.0, 0) }
+        
+        // Deterministic procedural hash from the frequency
+        let freqInt = Int(frequency * 100.0)
+        
+        let n = 2.0 + Double(freqInt % 6)       // n is in 2...7
+        let m = 2.0 + Double((freqInt / 7) % 6)  // m is in 2...7
+        let style = (freqInt / 13) % 4          // style is in 0...3
+        
+        // Ensure n and m are not equal to avoid trivial 0 flatlines
+        let finalN = n
+        var finalM = m
+        if finalN == finalM {
+            finalM += 1.0
         }
+        
+        return (finalN, finalM, style)
     }
 }
 
