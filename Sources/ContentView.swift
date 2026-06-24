@@ -159,38 +159,32 @@ struct ContentView: View {
                 }
             }
             .ignoresSafeArea()
- 
-             // Play / Stop button in the absolute geometric center (size remains same)
+
+             // Play / Stop button in the absolute geometric center (square, no text)
              Button(action: {
                  withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                      audioEngine.toggle()
                  }
              }) {
-                 HStack(spacing: 8) {
-                     Image(systemName: audioEngine.isPlaying ? "stop.fill" : "play.fill")
-                         .font(.system(size: 14, weight: .bold))
-                         .contentTransition(.symbolEffect(.replace))
- 
-                     Text(audioEngine.isPlaying ? "Stop" : "Play")
-                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                 }
-                 .foregroundColor(audioEngine.isPlaying ? .black : .white)
-                 .padding(.horizontal, 24)
-                 .padding(.vertical, 12)
-                 .background(
-                     Group {
-                         if audioEngine.isPlaying {
-                             Capsule()
-                                 .fill(Color.white)
-                         } else {
-                             Capsule()
-                                 .strokeBorder(Color.white, lineWidth: 1.5)
-                                 .background(Capsule().fill(Color.black)) // prevent showing pixel grid lines under transparent button text
+                 Image(systemName: audioEngine.isPlaying ? "stop.fill" : "play.fill")
+                     .font(.system(size: 16, weight: .bold))
+                     .contentTransition(.symbolEffect(.replace))
+                     .foregroundColor(audioEngine.isPlaying ? .black : .white)
+                     .frame(width: 48, height: 48)
+                     .background(
+                         Group {
+                             if audioEngine.isPlaying {
+                                 Rectangle()
+                                     .fill(Color.white)
+                             } else {
+                                 Rectangle()
+                                     .strokeBorder(Color.white, lineWidth: 1.5)
+                                     .background(Rectangle().fill(Color.black)) // prevent showing pixel grid lines under transparent button
+                             }
                          }
-                     }
-                 )
+                     )
              }
-            .buttonStyle(.plain)
+             .buttonStyle(.plain)
         }
         .frame(width: 400, height: 400)
     }
