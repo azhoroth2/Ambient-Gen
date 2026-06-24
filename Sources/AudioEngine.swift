@@ -80,6 +80,9 @@ final class AudioEngine: @unchecked Sendable {
     /// Whether the engine is currently playing.
     private(set) var isPlaying: Bool = false
 
+    /// Real-time audio amplitude level (0...1)
+    private(set) var currentLevel: Double = 0.0
+
     // MARK: - Private Audio Graph
 
     private let engine = AVAudioEngine()
@@ -179,6 +182,7 @@ final class AudioEngine: @unchecked Sendable {
             engine.mainMixerNode.outputVolume = 0.0
             engine.stop()
             dsp.currentAmplitude = 0.0
+            self.currentLevel = 0.0
         }
     }
 
@@ -537,6 +541,26 @@ final class AudioEngine: @unchecked Sendable {
         oscNode = osc
         noiseNode = noise
         melodyNode = melody
+
+        // Install tap to measure real-time amplitude of the final output (post-reverb)
+        reverb.installTap(onBus: 0, bufferSize: 1024, format: stereoFormat) { [weak self] buffer, time in
+            guard let self = self else { return }
+            guard let channelData = buffer.floatChannelData?[0] else { return }
+            let frameLength = Int(buffer.frameLength)
+            
+            var sum: Float = 0.0
+            for i in 0..<frameLength {
+                let sample = channelData[i]
+                sum += sample * sample
+            }
+            let rms = sqrt(sum / Float(frameLength))
+            
+            // Update level on Main Actor (smoothed envelope)
+            Task { @MainActor in
+                let target = Double(rms)
+                self.currentLevel = self.currentLevel * 0.85 + target * 0.15
+            }
+        }
     }
 
     // MARK: - Pink Noise (Voss-McCartney algorithm)
