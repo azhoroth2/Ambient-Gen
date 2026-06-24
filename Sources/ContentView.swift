@@ -194,6 +194,31 @@ struct ContentView: View {
                             
                             if opacity < 0.01 { continue }
                             
+                            // Determine color (drums are a muted slate-grey, melody is white)
+                            let drumActivity = kickLevel + snareLevel + hatLevel
+                            let totalInput = melodyActivity + drumActivity
+                            
+                            var pixelColor = Color.white
+                            if borderDist < borderRange {
+                                // Border pixels are purely drum-driven, draw them in muted slate-grey
+                                pixelColor = Color(red: 0.65, green: 0.68, blue: 0.72)
+                            } else if totalInput > 0.01 {
+                                let drumColor = Color(red: 0.65, green: 0.68, blue: 0.72)
+                                let blend = min(1.0, drumActivity / totalInput)
+                                
+                                if blend > 0.9 {
+                                    pixelColor = drumColor
+                                } else if blend > 0.1 {
+                                    // Smoothly blend white and slate-grey
+                                    let whiteAmt = 1.0 - blend
+                                    pixelColor = Color(
+                                        red: 1.0 * whiteAmt + 0.65 * blend,
+                                        green: 1.0 * whiteAmt + 0.68 * blend,
+                                        blue: 1.0 * whiteAmt + 0.72 * blend
+                                    )
+                                }
+                            }
+                            
                             // Draw glow layer for active wave pixels (boxShadow emulation)
                             if waveIntensity > 0.18 {
                                 let glowSize = currentPixelSize * 2.0
@@ -205,7 +230,7 @@ struct ContentView: View {
                                 )
                                 context.fill(
                                     Path(glowRect),
-                                    with: .color(.white.opacity(0.14 * waveIntensity * edgeFade))
+                                    with: .color(pixelColor.opacity(0.14 * waveIntensity * edgeFade))
                                 )
                             }
                             
@@ -219,7 +244,7 @@ struct ContentView: View {
                             
                             context.fill(
                                 Path(rect),
-                                with: .color(.white.opacity(opacity))
+                                with: .color(pixelColor.opacity(opacity))
                             )
                         }
                     }
