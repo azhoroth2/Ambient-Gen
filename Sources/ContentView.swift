@@ -9,10 +9,11 @@ struct ContentView: View {
             Color.black
                 .ignoresSafeArea()
 
-            // Sound-Reactive Pixel Wave Visualizer
+            // Sound-Reactive Pixel Wave & Chladni Sand Pattern Visualizer
             TimelineView(.animation) { timelineContext in
                 let time = timelineContext.date.timeIntervalSinceReferenceDate
                 let level = audioEngine.currentLevel
+                let activeVoices = audioEngine.activeVoices
 
                 Canvas { context, size in
                     let center = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -23,9 +24,13 @@ struct ContentView: View {
                     let gap: CGFloat = 4.0
                     let cellSize = pixelSize + gap
                     
-                    // Wave propagation speed
+                    // Wave propagation speed (for background ripples)
                     let speed = 4.0
                     let wavePhaseOffset = time * speed
+                    
+                    // Calculate active melody envelope sum
+                    let activeMelodyEnv = activeVoices.map { $0.envelopeValue }.reduce(0.0, +)
+                    let melodyActivity = min(1.0, activeMelodyEnv)
                     
                     // Calculate grid offset to center the pixels perfectly
                     let cols = Int(size.width / cellSize)
@@ -48,15 +53,51 @@ struct ContentView: View {
                             let progress = distance / maxRadius
                             let edgeFade = max(0.0, 1.0 - progress)
                             
-                            // Ripple wave phase propagating outwards from center
+                            // Normalized coordinates for Chladni math (-1...1 inside maxRadius)
+                            let u = dx / maxRadius
+                            let v = dy / maxRadius
+                            
+                            // 1. Calculate circular concentric ripple (default resting state)
                             let ripplePhase = distance * 0.035 - wavePhaseOffset
-                            let ripple = 0.5 + 0.5 * sin(ripplePhase) // 0...1 oscillation
+                            let circularRipple = 0.5 + 0.5 * sin(ripplePhase)
+                            
+                            // 2. Calculate Chladni sand shape pattern (when melody plays)
+                            var chladniVal = 0.0
+                            var activeWeight = 0.0
+                            
+                            // Physical vibration shimmer effect on coordinates (simulates plate vibration)
+                            let shimmerAmt = 0.022 * melodyActivity
+                            let vu = u + sin(time * 35.0 + distance * 0.1) * shimmerAmt
+                            let vv = v + cos(time * 35.0 + distance * 0.1) * shimmerAmt
+                            
+                            for voice in activeVoices {
+                                let env = voice.envelopeValue
+                                if env > 0.01 {
+                                    let (n, m) = getChladniModes(frequency: voice.frequency)
+                                    // Chladni square plate resonance formula:
+                                    // cos(n * pi * x) * cos(m * pi * y) - cos(m * pi * x) * cos(n * pi * y)
+                                    let val = cos(n * Double.pi * vu) * cos(m * Double.pi * vv) -
+                                              cos(m * Double.pi * vu) * cos(n * Double.pi * vv)
+                                    chladniVal += val * env
+                                    activeWeight += env
+                                }
+                            }
+                            
+                            if activeWeight > 0 {
+                                chladniVal = chladniVal / activeWeight
+                            }
+                            
+                            // Nodal lines are where amplitude is near 0 (sand accumulates at plate nodes)
+                            let chladniNodal = max(0.0, 1.0 - abs(chladniVal) * 3.8)
+                            
+                            // 3. Blend between circular ripples and Chladni sand shapes based on melody activity
+                            let finalIntensity = (1.0 - melodyActivity) * circularRipple + melodyActivity * chladniNodal
                             
                             // Wave intensity scales dramatically with sound
-                            let waveIntensity = ripple * (0.15 + levelScale * 1.6)
+                            let waveIntensity = finalIntensity * (0.15 + levelScale * 1.6)
                             
-                            // Pixel scale: scales up on wave peak
-                            let scale = 0.5 + ripple * 0.5 * (1.0 + levelScale * 0.4)
+                            // Pixel scale: scales up on active wave parts
+                            let scale = 0.5 + finalIntensity * 0.5 * (1.0 + levelScale * 0.4)
                             let currentPixelSize = pixelSize * scale
                             
                             // Opacity: background pixels are dim, wave is bright
@@ -130,6 +171,30 @@ struct ContentView: View {
             .buttonStyle(.plain)
         }
         .frame(width: 400, height: 400)
+    }
+
+    /// Determines Chladni plate vibration modes based on the active melody frequency.
+    private func getChladniModes(frequency: Double) -> (n: Double, m: Double) {
+        if frequency <= 0 { return (2, 2) }
+        // Map frequencies to specific Chladni resonances
+        // Low octaves/frequencies get simpler shapes, high ones get more complex grids
+        if frequency < 100 {
+            return (2.0, 3.0)
+        } else if frequency < 140 { // C3 range (~130 Hz)
+            return (3.0, 2.0)
+        } else if frequency < 155 { // D3 range (~146 Hz)
+            return (4.0, 2.0)
+        } else if frequency < 180 { // E3 range (~165 Hz)
+            return (3.0, 5.0)
+        } else if frequency < 210 { // G3 range (~196 Hz)
+            return (5.0, 4.0)
+        } else if frequency < 250 { // A3 range (~220 Hz)
+            return (6.0, 2.0)
+        } else if frequency < 350 { // Octave up notes
+            return (5.0, 5.0)
+        } else {
+            return (7.0, 3.0)
+        }
     }
 }
 

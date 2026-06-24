@@ -72,6 +72,11 @@ final class MelodyState: @unchecked Sendable {
 ///                                           │
 ///                                        Output
 /// ```
+struct VisualVoiceInfo: Sendable {
+    var frequency: Double
+    var envelopeValue: Double
+}
+
 @Observable
 final class AudioEngine: @unchecked Sendable {
 
@@ -82,6 +87,9 @@ final class AudioEngine: @unchecked Sendable {
 
     /// Real-time audio amplitude level (0...1)
     private(set) var currentLevel: Double = 0.0
+
+    /// Real-time melody voice states for visualization
+    private(set) var activeVoices: [VisualVoiceInfo] = []
 
     // MARK: - Private Audio Graph
 
@@ -183,6 +191,7 @@ final class AudioEngine: @unchecked Sendable {
             engine.stop()
             dsp.currentAmplitude = 0.0
             self.currentLevel = 0.0
+            self.activeVoices = []
         }
     }
 
@@ -555,10 +564,16 @@ final class AudioEngine: @unchecked Sendable {
             }
             let rms = sqrt(sum / Float(frameLength))
             
+            // Extract current melody voice states safely (read-only for visualization)
+            let voices = melDsp.voices.map { voice in
+                VisualVoiceInfo(frequency: voice.frequency, envelopeValue: voice.envelopeValue)
+            }
+            
             // Update level on Main Actor (smoothed envelope)
             Task { @MainActor in
                 let target = Double(rms)
                 self.currentLevel = self.currentLevel * 0.85 + target * 0.15
+                self.activeVoices = voices
             }
         }
     }
