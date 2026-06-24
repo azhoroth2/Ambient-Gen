@@ -1,0 +1,320 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.AmbientGen-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources",
+      "importPath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/SoundMode.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "AmbientGen",
+      "moduleOutputPath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/AmbientGen.swiftmodule",
+      "objects" : [
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j12",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "AmbientGen_main",
+        "-swift-version",
+        "6",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "ambient_gen"
+      ],
+      "outputFileMapPath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/AmbientGen.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift",
+        "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/SoundMode.swift"
+      ],
+      "tempsPath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "AmbientGen" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "AmbientGen",
+      "-package-name",
+      "ambient_gen",
+      "-c",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/SoundMode.swift",
+      "-I",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j12",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "AmbientGen_main",
+      "-swift-version",
+      "6",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "ambient_gen",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "AmbientGen" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<entitlement-plist>"
+        },
+        {
+          "kind" : "virtual",
+          "name" : "<com.apple.security.get-task-allow>"
+        }
+      ],
+      "outputFilePath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist"
+    },
+    "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/SoundMode.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources"
+    },
+    "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList"
+    },
+    "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

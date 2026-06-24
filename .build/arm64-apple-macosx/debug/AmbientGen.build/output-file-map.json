@@ -1,0 +1,33 @@
+{
+  "": {
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/master.swiftdeps"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift": {
+    "dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.d",
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.dia"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift": {
+    "dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.d",
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.dia"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift": {
+    "dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.d",
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.dia"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/SoundMode.swift": {
+    "dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.d",
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/SoundMode.dia"
+  }
+}
