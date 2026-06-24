@@ -14,6 +14,9 @@ struct ContentView: View {
                 let time = timelineContext.date.timeIntervalSinceReferenceDate
                 let level = audioEngine.currentLevel
                 let activeVoices = audioEngine.activeVoices
+                let kickLevel = audioEngine.kickLevel
+                let snareLevel = audioEngine.snareLevel
+                let hatLevel = audioEngine.hatLevel
 
                 Canvas { context, size in
                     let center = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -61,48 +64,52 @@ struct ContentView: View {
                             let ripplePhase = distance * 0.035 - wavePhaseOffset
                             let circularRipple = 0.5 + 0.5 * sin(ripplePhase)
                             
-                            // 2. Calculate Chladni sand shape pattern (when melody plays)
+                            // 2. Calculate Chladni sand shape pattern (when melody or drums play)
                             var chladniVal = 0.0
                             var activeWeight = 0.0
                             
-                            // Physical vibration shimmer effect on coordinates (simulates plate vibration)
-                            let shimmerAmt = 0.022 * melodyActivity
-                            let vu = u + sin(time * 35.0 + distance * 0.1) * shimmerAmt
-                            let vv = v + cos(time * 35.0 + distance * 0.1) * shimmerAmt
+                            // Plate activity combines melody activity and drum hits
+                            let totalActivity = min(1.0, melodyActivity + kickLevel * 0.8 + snareLevel * 0.8)
                             
-                            // Slow organic warp LFO to bend the lines gently over time
+                            // Kick creates a deep low-frequency plate/camera shake
+                            let kickShake = kickLevel * 0.03 * sin(time * 75.0)
+                            
+                            // Snare/Hat create high-frequency plate jitter
+                            let highJitter = (snareLevel * 0.045 + hatLevel * 0.018) * sin(time * 110.0)
+                            
+                            // Apply physical vibration shimmer, shake, and jitter to coordinates
+                            let shimmerAmt = 0.02 * melodyActivity + highJitter
+                            let vu = u + kickShake + sin(time * 35.0 + distance * 0.1) * shimmerAmt
+                            let vv = v + kickShake + cos(time * 35.0 + distance * 0.1) * shimmerAmt
+                            
+                            // Slow organic warp LFO to bend the lines gently over time, modulated by activity
                             let warpTime = time * 0.5
-                            let wu = vu + sin(vv * Double.pi * 1.5 + warpTime) * 0.03 * melodyActivity
-                            let wv = vv + cos(vu * Double.pi * 1.5 + warpTime) * 0.03 * melodyActivity
+                            let wu = vu + sin(vv * Double.pi * 1.5 + warpTime) * 0.03 * totalActivity
+                            let wv = vv + cos(vu * Double.pi * 1.5 + warpTime) * 0.03 * totalActivity
                             
+                            // Accumulate melody voices
                             for voice in activeVoices {
                                 let env = voice.envelopeValue
                                 if env > 0.01 {
                                     let (n, m, style) = getChladniParameters(frequency: voice.frequency)
-                                    
-                                    // Slow time-based LFO to drift the modes slightly (adds fluid organic morphing)
-                                    let nMod = n + sin(time * 0.4) * 0.12
-                                    let mMod = m + cos(time * 0.3) * 0.12
-                                    
-                                    let val: Double
-                                    switch style {
-                                    case 0:
-                                        val = cos(nMod * Double.pi * wu) * cos(mMod * Double.pi * wv) -
-                                              cos(mMod * Double.pi * wu) * cos(nMod * Double.pi * wv)
-                                    case 1:
-                                        val = cos(nMod * Double.pi * wu) * cos(mMod * Double.pi * wv) +
-                                              cos(mMod * Double.pi * wu) * cos(nMod * Double.pi * wv)
-                                    case 2:
-                                        val = sin(nMod * Double.pi * wu) * sin(mMod * Double.pi * wv) -
-                                              sin(mMod * Double.pi * wu) * sin(nMod * Double.pi * wv)
-                                    default:
-                                        val = cos(nMod * Double.pi * wu) * sin(mMod * Double.pi * wv) -
-                                              sin(mMod * Double.pi * wu) * cos(nMod * Double.pi * wv)
-                                    }
-                                    
+                                    let val = calculateChladni(u: wu, v: wv, n: n, m: m, style: style, time: time)
                                     chladniVal += val * env
                                     activeWeight += env
                                 }
+                            }
+                            
+                            // Accumulate Kick drum procedural Chladni pattern (deep low mode n=2, m=3, style=1 cosine sum)
+                            if kickLevel > 0.01 {
+                                let kickVal = calculateChladni(u: wu, v: wv, n: 2.0, m: 3.0, style: 1, time: time)
+                                chladniVal += kickVal * kickLevel * 1.2
+                                activeWeight += kickLevel * 1.2
+                            }
+                            
+                            // Accumulate Snare drum procedural Chladni pattern (medium-high mode n=5, m=6, style=2 sine diff)
+                            if snareLevel > 0.01 {
+                                let snareVal = calculateChladni(u: wu, v: wv, n: 5.0, m: 6.0, style: 2, time: time)
+                                chladniVal += snareVal * snareLevel * 1.0
+                                activeWeight += snareLevel * 1.0
                             }
                             
                             if activeWeight > 0 {
@@ -112,18 +119,29 @@ struct ContentView: View {
                             // Nodal lines are where amplitude is near 0 (sand accumulates at plate nodes)
                             let chladniNodal = max(0.0, 1.0 - abs(chladniVal) * 3.8)
                             
-                            // 3. Blend between circular ripples and Chladni sand shapes based on melody activity
-                            let finalIntensity = (1.0 - melodyActivity) * circularRipple + melodyActivity * chladniNodal
+                            // 3. Blend circular ripples and Chladni sand shapes based on active plate vibration
+                            let baseIntensity = (1.0 - totalActivity) * circularRipple + totalActivity * chladniNodal
                             
-                            // Wave intensity scales dramatically with sound
+                            // Add extra local drum flash/sparkle overlay for visual punch
+                            // Kick hit effect: heavy center expansion dome
+                            let kickPulse = kickLevel * max(0.0, 1.0 - progress * 1.6)
+                            
+                            // Snare hit effect: subtle vertical/horizontal cross lines on snare hits
+                            let snareCross = max(0.0, 1.0 - min(abs(u), abs(v)) * 8.0) * snareLevel * 0.4
+                            let finalIntensity = min(1.0, baseIntensity + snareCross)
+                            
+                            // Wave intensity scales with overall sound
                             let waveIntensity = finalIntensity * (0.15 + levelScale * 1.6)
                             
-                            // Pixel scale: scales up on active wave parts
-                            let scale = 0.5 + finalIntensity * 0.5 * (1.0 + levelScale * 0.4)
+                            // Pixel scale: scales up on wave parts, boosted by Kick base punch
+                            let scale = 0.5 + finalIntensity * 0.5 * (1.0 + levelScale * 0.4) + kickPulse * 0.35
                             let currentPixelSize = pixelSize * scale
                             
-                            // Opacity: background pixels are dim, wave is bright
-                            let opacity = (0.04 + waveIntensity * 0.75) * edgeFade
+                            // Hi-hat hit effect: fast sparkling metallic grain dust
+                            let hatSparkle = ((r * 31 + c * 17) % 7 == 0) ? hatLevel * 0.6 : 0.0
+                            
+                            // Opacity: background pixels are dim, wave is bright, boosted by Kick and Hat sparkles
+                            let opacity = (0.04 + waveIntensity * 0.75 + kickPulse * 0.4 + hatSparkle) * edgeFade
                             
                             if opacity < 0.01 { continue }
                             
@@ -208,6 +226,28 @@ struct ContentView: View {
         }
         
         return (finalN, finalM, style)
+    }
+
+    /// Calculates the Chladni plate displacement at a given normalized coordinate.
+    private func calculateChladni(u: Double, v: Double, n: Double, m: Double, style: Int, time: Double) -> Double {
+        // Slow time-based LFO to drift the modes slightly (adds fluid organic morphing)
+        let nMod = n + sin(time * 0.4) * 0.12
+        let mMod = m + cos(time * 0.3) * 0.12
+        
+        switch style {
+        case 0:
+            return cos(nMod * Double.pi * u) * cos(mMod * Double.pi * v) -
+                   cos(mMod * Double.pi * u) * cos(nMod * Double.pi * v)
+        case 1:
+            return cos(nMod * Double.pi * u) * cos(mMod * Double.pi * v) +
+                   cos(mMod * Double.pi * u) * cos(nMod * Double.pi * v)
+        case 2:
+            return sin(nMod * Double.pi * u) * sin(mMod * Double.pi * v) -
+                   sin(mMod * Double.pi * u) * sin(nMod * Double.pi * v)
+        default:
+            return cos(nMod * Double.pi * u) * sin(mMod * Double.pi * v) -
+                   sin(mMod * Double.pi * u) * cos(nMod * Double.pi * v)
+        }
     }
 }
 

@@ -66,13 +66,16 @@ final class MelodyState: @unchecked Sendable {
 final class DrumState: @unchecked Sendable {
     var kickTime: Double = -1.0
     var kickPhase: Double = 0.0
+    var kickEnvelope: Double = 0.0
     
     var snareTime: Double = -1.0
     var snarePhase: Double = 0.0
+    var snareEnvelope: Double = 0.0
     
     var hatTime: Double = -1.0
     var hatLastNoise: Double = 0.0
     var hatVolume: Double = 0.0
+    var hatEnvelope: Double = 0.0
     
     // Step sequencer: starts after a ~2s initial delay
     var samplesUntilNextStep: Int = 88200
@@ -110,6 +113,11 @@ final class AudioEngine: @unchecked Sendable {
 
     /// Real-time melody voice states for visualization
     private(set) var activeVoices: [VisualVoiceInfo] = []
+
+    /// Real-time drum envelopes for visual patterns
+    private(set) var kickLevel: Double = 0.0
+    private(set) var snareLevel: Double = 0.0
+    private(set) var hatLevel: Double = 0.0
 
     // MARK: - Private Audio Graph
 
@@ -214,9 +222,15 @@ final class AudioEngine: @unchecked Sendable {
             dsp.currentAmplitude = 0.0
             self.currentLevel = 0.0
             self.activeVoices = []
+            self.kickLevel = 0.0
+            self.snareLevel = 0.0
+            self.hatLevel = 0.0
             self.drumDsp.kickTime = -1.0
             self.drumDsp.snareTime = -1.0
             self.drumDsp.hatTime = -1.0
+            self.drumDsp.kickEnvelope = 0.0
+            self.drumDsp.snareEnvelope = 0.0
+            self.drumDsp.hatEnvelope = 0.0
             self.drumDsp.currentStep = 0
             self.drumDsp.samplesUntilNextStep = 88200
         }
@@ -554,26 +568,53 @@ final class AudioEngine: @unchecked Sendable {
                     
                     let step = drumDsp.currentStep
                     
-                    // Trigger Kick
-                    // Boom-bap pattern: steps 0, 8, 10
-                    if step == 0 || step == 8 || step == 10 {
+                    // Procedural Boom-Bap sequencer rules (probabilistic & organic)
+                    // Kick probability:
+                    var triggerKick = false
+                    if step == 0 {
+                        triggerKick = true // Downbeat is guaranteed
+                    } else if step == 8 {
+                        triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.90 // 90% chance
+                    } else if step == 10 {
+                        triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.70 // 70% chance of double kick syncopation
+                    } else if step == 6 || step == 14 {
+                        triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.15 // 15% chance of a ghost kick
+                    }
+                    
+                    if triggerKick {
                         drumDsp.kickTime = 0.0
                         drumDsp.kickPhase = 0.0
                     }
                     
-                    // Trigger Snare
-                    // Boom-bap pattern: steps 4, 12
+                    // Snare probability:
+                    var triggerSnare = false
                     if step == 4 || step == 12 {
+                        triggerSnare = true // Backbeat is guaranteed
+                    } else if step == 15 {
+                        triggerSnare = Self.nextRandomUnit(&drumDsp.rngState) < 0.20 // 20% chance of a fill/pickup snare
+                    }
+                    
+                    if triggerSnare {
                         drumDsp.snareTime = 0.0
                         drumDsp.snarePhase = 0.0
                     }
                     
-                    // Trigger Hi-Hat
-                    // Accent on beat (steps 0, 4, 8, 12)
+                    // Hi-Hat probability & rolls:
+                    // Usually plays on even steps, but occasionally plays sixteenth notes or rolls
+                    var triggerHat = false
+                    var accent = false
                     if step % 2 == 0 {
+                        triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.95 // 95% on-beat hat
+                        accent = (step % 4 == 0)
+                    } else {
+                        // 15% chance of a 16th note subdivision (hi-hat roll/fill)
+                        triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.18
+                    }
+                    
+                    if triggerHat {
                         drumDsp.hatTime = 0.0
-                        let randomVol = 0.03 + Self.nextRandomUnit(&drumDsp.rngState) * 0.015
-                        drumDsp.hatVolume = (step % 4 == 0) ? 0.06 : randomVol
+                        let baseVol = accent ? 0.06 : 0.03
+                        drumDsp.hatVolume = baseVol + Self.nextRandomUnit(&drumDsp.rngState) * 0.015
                     }
                     
                     drumDsp.currentStep = (step + 1) % 16
@@ -591,10 +632,14 @@ final class AudioEngine: @unchecked Sendable {
                     let kickEnv = exp(-drumDsp.kickTime * 18.0)
                     sample += Float(kickVal * kickEnv * 0.22)
                     
+                    drumDsp.kickEnvelope = kickEnv
                     drumDsp.kickTime += 1.0 / sampleRate
                     if drumDsp.kickTime > 0.22 {
                         drumDsp.kickTime = -1.0
+                        drumDsp.kickEnvelope = 0.0
                     }
+                } else {
+                    drumDsp.kickEnvelope = 0.0
                 }
                 
                 // Snare drum synthesis
@@ -612,10 +657,14 @@ final class AudioEngine: @unchecked Sendable {
                     let snareMix = snareVal * bodyEnv * 0.35 + noiseVal * noiseEnv * 0.65
                     sample += Float(snareMix * 0.12)
                     
+                    drumDsp.snareEnvelope = bodyEnv * 0.35 + noiseEnv * 0.65
                     drumDsp.snareTime += 1.0 / sampleRate
                     if drumDsp.snareTime > 0.25 {
                         drumDsp.snareTime = -1.0
+                        drumDsp.snareEnvelope = 0.0
                     }
+                } else {
+                    drumDsp.snareEnvelope = 0.0
                 }
                 
                 // Hi-Hat synthesis
@@ -628,10 +677,14 @@ final class AudioEngine: @unchecked Sendable {
                     let hatEnv = exp(-drumDsp.hatTime * 85.0)
                     sample += Float(hatVal * hatEnv * drumDsp.hatVolume)
                     
+                    drumDsp.hatEnvelope = hatEnv
                     drumDsp.hatTime += 1.0 / sampleRate
                     if drumDsp.hatTime > 0.05 {
                         drumDsp.hatTime = -1.0
+                        drumDsp.hatEnvelope = 0.0
                     }
+                } else {
+                    drumDsp.hatEnvelope = 0.0
                 }
                 
                 // Write mono sample to stereo output buffers
@@ -708,11 +761,19 @@ final class AudioEngine: @unchecked Sendable {
                 VisualVoiceInfo(frequency: voice.frequency, envelopeValue: voice.envelopeValue)
             }
             
+            // Extract current drum envelopes safely
+            let kickLvl = drumDsp.kickEnvelope
+            let snareLvl = drumDsp.snareEnvelope
+            let hatLvl = drumDsp.hatEnvelope
+            
             // Update level on Main Actor (smoothed envelope)
             Task { @MainActor in
                 let target = Double(rms)
                 self.currentLevel = self.currentLevel * 0.85 + target * 0.15
                 self.activeVoices = voices
+                self.kickLevel = kickLvl
+                self.snareLevel = snareLvl
+                self.hatLevel = hatLvl
             }
         }
     }
