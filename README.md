@@ -14,7 +14,7 @@ A minimal, beautiful, and sound-reactive macOS menu bar utility designed to gene
 - **Sound-Reactive Visualizer**:
   - **Chladni Sand Patterns**: Procedural particle simulation vibrating based on active music frequencies.
   - **Pixel Ripples**: Sound-reactive waves that flare and dim dynamically.
-- **Premium macOS Integration**:
+- **MacOS Integration**:
   - **Menu Bar Utility**: Runs as a lightweight accessory application without cluttering your Dock.
   - **Borderless Floating Window**: Sleek, dark glassmorphism design with key focus transitions and smooth animations.
 
