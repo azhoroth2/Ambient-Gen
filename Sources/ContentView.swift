@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var audioEngine = AudioEngine()
+    var audioEngine: AudioEngine
 
     var body: some View {
         @Bindable var engine = audioEngine
@@ -451,5 +451,5 @@ struct TempoSlider: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(audioEngine: AudioEngine())
 }
