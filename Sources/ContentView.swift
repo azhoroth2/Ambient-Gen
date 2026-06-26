@@ -301,6 +301,7 @@ struct ContentView: View {
                     MixerSlider(label: "Binaural Beats", value: $engine.oscVolume)
                     MixerSlider(label: "Pink Noise", value: $engine.noiseVolume)
                     MixerSlider(label: "Ambient Synth", value: $engine.melodyVolume)
+                    MixerSlider(label: "Lo-Fi Bass", value: $engine.bassVolume)
                     MixerSlider(label: "Lo-Fi Drums", value: $engine.drumsVolume)
                 }
             }
@@ -372,6 +373,32 @@ struct WindowAccessor: NSViewRepresentable {
         DispatchQueue.main.async {
             if let window = view.window {
                 callback(window)
+                
+                Task { @MainActor in
+                    // Initial smooth fade-in
+                    window.alphaValue = 0.0
+                    NSAnimationContext.runAnimationGroup { ctx in
+                        ctx.duration = 0.22
+                        ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                        window.animator().alphaValue = 1.0
+                    }
+                }
+                
+                // Observe key focus transitions for subsequent opens
+                NotificationCenter.default.addObserver(
+                    forName: NSWindow.didBecomeKeyNotification,
+                    object: window,
+                    queue: .main
+                ) { _ in
+                    Task { @MainActor in
+                        window.alphaValue = 0.0
+                        NSAnimationContext.runAnimationGroup { ctx in
+                            ctx.duration = 0.22
+                            ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                            window.animator().alphaValue = 1.0
+                        }
+                    }
+                }
             }
         }
         return view

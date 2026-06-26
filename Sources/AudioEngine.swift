@@ -103,6 +103,32 @@ final class DrumState: @unchecked Sendable {
     var activePatternIndex: Int = 0
 }
 
+/// Shared state for the generative sub-bass voice.
+final class BassState: @unchecked Sendable {
+    var frequency: Double = 0.0
+    var phase: Double = 0.0
+    var envelopeValue: Double = 0.0
+    var stage: Int = 0 // 0=idle, 1=attack, 2=decay, 3=sustain, 4=release
+    
+    var releaseRate: Double = 0.0
+    var startReleaseLevel: Double = 0.7
+    
+    var pendingFrequency: Double = 0.0
+    var triggerDelay: Int = 0
+    
+    var stepsRemaining: Int = 0
+    
+    var samplesUntilNextStep: Int = 88200
+    var currentStep: Int = 0
+    
+    var rngState: UInt64 = 0x9876_FEDC_BA98_7654
+    
+    var bpm: Double = 112.0
+    
+    var patternIndex: Int = 0
+    var activePatternIndex: Int = 0
+}
+
 /// Real-time binaural-beat audio engine with pink noise and LFO.
 ///
 /// Signal chain:
@@ -151,6 +177,7 @@ final class AudioEngine: @unchecked Sendable {
         didSet {
             melodyDsp.bpm = bpm
             drumDsp.bpm = bpm
+            bassDsp.bpm = bpm
         }
     }
 
@@ -164,6 +191,9 @@ final class AudioEngine: @unchecked Sendable {
     var melodyVolume: Double = 0.22 {
         didSet { melodyNode?.volume = Float(melodyVolume) }
     }
+    var bassVolume: Double = 0.40 {
+        didSet { bassNode?.volume = Float(bassVolume) }
+    }
     var drumsVolume: Double = 0.86 {
         didSet { drumNode?.volume = Float(drumsVolume) }
     }
@@ -174,6 +204,7 @@ final class AudioEngine: @unchecked Sendable {
     private var oscNode: AVAudioSourceNode?
     private var noiseNode: AVAudioSourceNode?
     private var melodyNode: AVAudioSourceNode?
+    private var bassNode: AVAudioSourceNode?
     private var drumNode: AVAudioSourceNode?
     private let reverb = AVAudioUnitReverb()
 
@@ -183,6 +214,7 @@ final class AudioEngine: @unchecked Sendable {
     private let noiseDsp = PinkNoiseState()
     private let melodyDsp = MelodyState()
     private let drumDsp = DrumState()
+    private let bassDsp = BassState()
     private var fadeTask: Task<Void, Never>?
     private var patternTimer: Timer?
 
@@ -252,6 +284,7 @@ final class AudioEngine: @unchecked Sendable {
                 let nextPattern = (self.melodyDsp.patternIndex + 1) % 3
                 self.melodyDsp.patternIndex = nextPattern
                 self.drumDsp.patternIndex = nextPattern
+                self.bassDsp.patternIndex = nextPattern
                 print("AudioEngine: advanced pattern to \(nextPattern)")
             }
         }
@@ -304,6 +337,7 @@ final class AudioEngine: @unchecked Sendable {
             self.kickLevel = 0.0
             self.snareLevel = 0.0
             self.hatLevel = 0.0
+            
             self.melodyDsp.samplesUntilNext = 88200
             self.melodyDsp.activeVoiceIndex = -1
             for i in 0..<5 {
@@ -313,6 +347,7 @@ final class AudioEngine: @unchecked Sendable {
             self.melodyDsp.activePatternIndex = 0
             self.melodyDsp.currentChordIndex = 0
             self.melodyDsp.beatsInCurrentChord = 0
+            
             self.drumDsp.kickTime = -1.0
             self.drumDsp.snareTime = -1.0
             self.drumDsp.hatTime = -1.0
@@ -323,6 +358,16 @@ final class AudioEngine: @unchecked Sendable {
             self.drumDsp.samplesUntilNextStep = 88200
             self.drumDsp.patternIndex = 0
             self.drumDsp.activePatternIndex = 0
+            
+            self.bassDsp.frequency = 0.0
+            self.bassDsp.envelopeValue = 0.0
+            self.bassDsp.stage = 0
+            self.bassDsp.currentStep = 0
+            self.bassDsp.samplesUntilNextStep = 88200
+            self.bassDsp.stepsRemaining = 0
+            self.bassDsp.triggerDelay = 0
+            self.bassDsp.patternIndex = 0
+            self.bassDsp.activePatternIndex = 0
         }
     }
 
@@ -956,41 +1001,212 @@ final class AudioEngine: @unchecked Sendable {
             return noErr
         }
 
-        // ── 5. Reverb ───────────────────────────────────────────────
+        // ── 5. Bass node (stereo, generative sub-bass) ──────────────
+
+        let bassDsp = self.bassDsp
+        let melodyDsp = self.melodyDsp
+        let bass = AVAudioSourceNode { _, _, frameCount, audioBufferList -> OSStatus in
+            let abl = UnsafeMutableAudioBufferListPointer(audioBufferList)
+
+            for frame in 0..<Int(frameCount) {
+                // 1. Sequencer step timing
+                bassDsp.samplesUntilNextStep -= 1
+                if bassDsp.samplesUntilNextStep <= 0 {
+                    let beatLengthSamples = (60.0 / bassDsp.bpm) * sampleRate
+                    bassDsp.samplesUntilNextStep = Int(beatLengthSamples / 4.0)
+                    
+                    let step = bassDsp.currentStep
+                    
+                    // Sync patternIndex on step 0
+                    if step == 0 {
+                        bassDsp.activePatternIndex = bassDsp.patternIndex
+                    }
+                    
+                    let pattern = bassDsp.activePatternIndex
+                    var playNote = false
+                    var noteSteps = 2
+                    var frequencyMultiplier = 1.0
+                    
+                    switch pattern {
+                    case 1:
+                        // Pattern 1: Jazz walking (0, 4, 8, 12)
+                        if step == 0 {
+                            playNote = true
+                            noteSteps = 3
+                            frequencyMultiplier = 1.0
+                        } else if step == 4 {
+                            playNote = true
+                            noteSteps = 3
+                            frequencyMultiplier = 1.2
+                        } else if step == 8 {
+                            playNote = true
+                            noteSteps = 3
+                            frequencyMultiplier = 1.5
+                        } else if step == 12 {
+                            playNote = true
+                            noteSteps = 3
+                            frequencyMultiplier = 2.0
+                        }
+                    case 2:
+                        // Pattern 2: Halftime sub (0, 10)
+                        if step == 0 {
+                            playNote = true
+                            noteSteps = 8
+                            frequencyMultiplier = 1.0
+                        } else if step == 10 {
+                            playNote = true
+                            noteSteps = 4
+                            frequencyMultiplier = 1.0
+                        }
+                    default:
+                        // Pattern 0: Classic Boom-Bap syncopated (0, 6, 8, 10)
+                        if step == 0 {
+                            playNote = true
+                            noteSteps = 3
+                            frequencyMultiplier = 1.0
+                        } else if step == 6 {
+                            playNote = true
+                            noteSteps = 2
+                            frequencyMultiplier = (Self.nextRandomUnit(&bassDsp.rngState) < 0.5) ? 1.5 : 1.0
+                        } else if step == 8 {
+                            playNote = true
+                            noteSteps = 3
+                            frequencyMultiplier = 1.0
+                        } else if step == 10 {
+                            playNote = true
+                            noteSteps = 2
+                            frequencyMultiplier = 1.0
+                        }
+                    }
+                    
+                    // Release sub-bass after the steps have elapsed
+                    if bassDsp.stepsRemaining > 0 {
+                        bassDsp.stepsRemaining -= 1
+                        if bassDsp.stepsRemaining == 0 {
+                            if bassDsp.stage != 0 && bassDsp.stage != 4 {
+                                bassDsp.stage = 4
+                                bassDsp.startReleaseLevel = bassDsp.envelopeValue
+                                bassDsp.releaseRate = bassDsp.envelopeValue / (0.35 * sampleRate) // 350ms release
+                            }
+                        }
+                    }
+                    
+                    if playNote {
+                        let targetFreq = Self.getBassFrequency(pattern: pattern, chordIndex: melodyDsp.currentChordIndex)
+                        let finalFreq = targetFreq * frequencyMultiplier
+                        
+                        bassDsp.stepsRemaining = noteSteps
+                        
+                        if bassDsp.stage != 0 {
+                            bassDsp.stage = 4
+                            bassDsp.startReleaseLevel = bassDsp.envelopeValue
+                            bassDsp.releaseRate = bassDsp.envelopeValue / (0.04 * sampleRate) // 40ms release
+                            bassDsp.triggerDelay = Int(0.04 * sampleRate)
+                            bassDsp.pendingFrequency = finalFreq
+                        } else {
+                            bassDsp.frequency = finalFreq
+                            bassDsp.phase = 0.0
+                            bassDsp.envelopeValue = 0.0
+                            bassDsp.stage = 1 // Attack
+                            bassDsp.triggerDelay = 0
+                        }
+                    }
+                    
+                    bassDsp.currentStep = (step + 1) % 16
+                }
+                
+                // 2. Synthesize Bass sample
+                var sample: Float = 0.0
+                
+                if bassDsp.triggerDelay > 0 {
+                    bassDsp.triggerDelay -= 1
+                    if bassDsp.triggerDelay == 0 {
+                        bassDsp.frequency = bassDsp.pendingFrequency
+                        bassDsp.phase = 0.0
+                        bassDsp.envelopeValue = 0.0
+                        bassDsp.stage = 1 // Attack
+                    }
+                }
+                
+                // Process envelope
+                switch bassDsp.stage {
+                case 1: // Attack
+                    bassDsp.envelopeValue += 1.0 / (0.08 * sampleRate)
+                    if bassDsp.envelopeValue >= 1.0 {
+                        bassDsp.envelopeValue = 1.0
+                        bassDsp.stage = 2 // Decay
+                    }
+                case 2: // Decay
+                    bassDsp.envelopeValue -= (1.0 - 0.7) / (0.15 * sampleRate)
+                    if bassDsp.envelopeValue <= 0.7 {
+                        bassDsp.envelopeValue = 0.7
+                        bassDsp.stage = 3 // Sustain
+                    }
+                case 3: // Sustain
+                    break
+                case 4: // Release
+                    bassDsp.envelopeValue -= bassDsp.releaseRate
+                    if bassDsp.envelopeValue <= 0.0 {
+                        bassDsp.envelopeValue = 0.0
+                        bassDsp.stage = 0 // Idle
+                    }
+                default:
+                    break
+                }
+                
+                if bassDsp.stage != 0 {
+                    let gain = Self.smoothStep(bassDsp.envelopeValue)
+                    let ph = bassDsp.phase
+                    let signal = sin(ph) * 1.0 + sin(ph * 2.0) * 0.15
+                    let saturated = signal / (1.0 + abs(signal) * 0.20)
+                    
+                    sample = Float(saturated * gain * 0.35)
+                    
+                    bassDsp.phase += 2.0 * Double.pi * bassDsp.frequency / sampleRate
+                    if bassDsp.phase >= 2.0 * Double.pi {
+                        bassDsp.phase -= 2.0 * Double.pi
+                    }
+                }
+                
+                // Write mono sample to stereo output buffers
+                if abl.count >= 2 {
+                    let leftPtr = abl[0].mData?.assumingMemoryBound(to: Float.self)
+                    let rightPtr = abl[1].mData?.assumingMemoryBound(to: Float.self)
+                    leftPtr?[frame] = sample
+                    rightPtr?[frame] = sample
+                }
+            }
+            return noErr
+        }
+
+        // ── 6. Reverb ───────────────────────────────────────────────
 
         reverb.loadFactoryPreset(.largeChamber)
         reverb.wetDryMix = 55
 
-        // ── 6. Wire the graph ───────────────────────────────────────
-        //
-        //   osc  ──→ mainMixer ←── noise
-        //                ↑
-        //              melody
-        //                ↑
-        //              drums
-        //                │
-        //             reverb
-        //                │
-        //             output
-
+        // ── 7. Wire the graph ───────────────────────────────────────
+        
         let mixer = engine.mainMixerNode
 
         engine.attach(osc)
         engine.attach(noise)
         engine.attach(melody)
         engine.attach(drums)
+        engine.attach(bass)
         engine.attach(reverb)
 
         engine.connect(osc, to: mixer, format: stereoFormat)
         engine.connect(noise, to: mixer, format: stereoFormat)
         engine.connect(melody, to: mixer, format: stereoFormat)
         engine.connect(drums, to: mixer, format: stereoFormat)
+        engine.connect(bass, to: mixer, format: stereoFormat)
 
         // Set initial node volumes from public properties
         osc.volume = Float(oscVolume)
         noise.volume = Float(noiseVolume)
         melody.volume = Float(melodyVolume)
         drums.volume = Float(drumsVolume)
+        bass.volume = Float(bassVolume)
 
         // Disconnect default mixer→output, insert reverb in between
         engine.disconnectNodeOutput(mixer)
@@ -1001,6 +1217,7 @@ final class AudioEngine: @unchecked Sendable {
         noiseNode = noise
         melodyNode = melody
         drumNode = drums
+        bassNode = bass
 
         // Install tap to measure real-time amplitude of the final output (post-reverb)
         reverb.installTap(onBus: 0, bufferSize: 1024, format: stereoFormat) { [weak self] buffer, time in
@@ -1094,6 +1311,23 @@ final class AudioEngine: @unchecked Sendable {
         state ^= state >> 7
         state ^= state << 17
         return Double(state) / Double(UInt64.max)
+    }
+
+    static func getBassFrequency(pattern: Int, chordIndex: Int) -> Double {
+        switch pattern {
+        case 1:
+            // Pattern 1: Dm7 -> G7 -> Cmaj7 -> A7
+            let roots = [73.42, 98.00, 65.41, 55.00] // D2, G2, C2, A1
+            return roots[chordIndex % 4]
+        case 2:
+            // Pattern 2: Fmaj7#11 -> G/F -> Em7 -> Am9
+            let roots = [87.31, 98.00, 82.41, 55.00] // F2, G2, E2, A1
+            return roots[chordIndex % 4]
+        default:
+            // Pattern 0: Am7 -> Fmaj7 -> Cmaj7 -> G6
+            let roots = [55.00, 87.31, 65.41, 49.00] // A1, F2, C2, G1
+            return roots[chordIndex % 4]
+        }
     }
 
     /// Smooth Hermite interpolation S-curve: 3x^2 - 2x^3 (0 <= x <= 1)
