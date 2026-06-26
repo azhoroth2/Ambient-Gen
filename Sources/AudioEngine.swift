@@ -101,6 +101,13 @@ final class DrumState: @unchecked Sendable {
     var pixelateHoldValue: Float = 0.0
     var patternIndex: Int = 0
     var activePatternIndex: Int = 0
+    
+    // Drum filters state
+    var filterState: Float = 0.0
+    var snareFilterLP: Double = 0.0
+    var snareFilterHP: Double = 0.0
+    var hatFilterLP: Double = 0.0
+    var hatFilterHP: Double = 0.0
 }
 
 /// Shared state for the generative sub-bass voice.
@@ -358,6 +365,11 @@ final class AudioEngine: @unchecked Sendable {
             self.drumDsp.samplesUntilNextStep = 88200
             self.drumDsp.patternIndex = 0
             self.drumDsp.activePatternIndex = 0
+            self.drumDsp.filterState = 0.0
+            self.drumDsp.snareFilterLP = 0.0
+            self.drumDsp.snareFilterHP = 0.0
+            self.drumDsp.hatFilterLP = 0.0
+            self.drumDsp.hatFilterHP = 0.0
             
             self.bassDsp.frequency = 0.0
             self.bassDsp.envelopeValue = 0.0
@@ -919,12 +931,16 @@ final class AudioEngine: @unchecked Sendable {
                 
                 // Kick drum synthesis
                 if drumDsp.kickTime >= 0.0 {
-                    // Exponential pitch sweep from 150Hz to 48Hz
-                    let freq = 48.0 + 102.0 * exp(-drumDsp.kickTime * 45.0)
+                    // Stage 1 fast sweep for transient click + Stage 2 body sweep
+                    let sweep1 = 150.0 * exp(-drumDsp.kickTime * 140.0)
+                    let sweep2 = 46.0 + 84.0 * exp(-drumDsp.kickTime * 28.0)
+                    let freq = sweep1 + sweep2
                     drumDsp.kickPhase += 2.0 * Double.pi * freq / sampleRate
                     let kickVal = sin(drumDsp.kickPhase)
-                    let kickEnv = exp(-drumDsp.kickTime * 18.0)
-                    sample += Float(kickVal * kickEnv * 0.22)
+                    // Soft saturation for warm tape distortion
+                    let saturatedKick = kickVal / (1.0 + abs(kickVal) * 0.15)
+                    let kickEnv = exp(-drumDsp.kickTime * 16.0)
+                    sample += Float(saturatedKick * kickEnv * 0.24)
                     
                     drumDsp.kickEnvelope = kickEnv
                     drumDsp.kickTime += 1.0 / sampleRate
@@ -938,20 +954,28 @@ final class AudioEngine: @unchecked Sendable {
                 
                 // Snare drum synthesis
                 if drumDsp.snareTime >= 0.0 {
-                    // Low tone body (185 Hz)
-                    drumDsp.snarePhase += 2.0 * Double.pi * 185.0 / sampleRate
+                    // Low tone body (180 Hz)
+                    drumDsp.snarePhase += 2.0 * Double.pi * 180.0 / sampleRate
                     let snareVal = sin(drumDsp.snarePhase)
-                    let bodyEnv = exp(-drumDsp.snareTime * 38.0)
+                    let bodyEnv = exp(-drumDsp.snareTime * 36.0)
                     
-                    // Snare white noise rattle
+                    // Snare band-passed white noise rattle
                     let noiseVal = Self.nextRandom(&drumDsp.rngState)
+                    // 1-pole HP filter at ~600Hz
+                    drumDsp.snareFilterHP = noiseVal * 0.82 + drumDsp.snareFilterHP * 0.18
+                    let hpNoise = noiseVal - drumDsp.snareFilterHP
+                    // 1-pole LP filter at ~4000Hz
+                    drumDsp.snareFilterLP = hpNoise * 0.40 + drumDsp.snareFilterLP * 0.60
+                    let bpNoise = drumDsp.snareFilterLP
+                    
                     let noiseEnv = exp(-drumDsp.snareTime * 14.0)
                     
                     // Mix body and noise
-                    let snareMix = snareVal * bodyEnv * 0.35 + noiseVal * noiseEnv * 0.65
-                    sample += Float(snareMix * 0.12)
+                    let snareMix = snareVal * bodyEnv * 0.38 + bpNoise * noiseEnv * 0.62
+                    let saturatedSnare = snareMix / (1.0 + abs(snareMix) * 0.15)
+                    sample += Float(saturatedSnare * 0.14)
                     
-                    drumDsp.snareEnvelope = bodyEnv * 0.35 + noiseEnv * 0.65
+                    drumDsp.snareEnvelope = bodyEnv * 0.38 + noiseEnv * 0.62
                     drumDsp.snareTime += 1.0 / sampleRate
                     if drumDsp.snareTime > 0.25 {
                         drumDsp.snareTime = -1.0
@@ -964,12 +988,16 @@ final class AudioEngine: @unchecked Sendable {
                 // Hi-Hat synthesis
                 if drumDsp.hatTime >= 0.0 {
                     let noiseVal = Self.nextRandom(&drumDsp.rngState)
-                    // High-pass filter (DC blocker difference)
-                    let hatVal = noiseVal - drumDsp.hatLastNoise
-                    drumDsp.hatLastNoise = noiseVal
+                    // Bandpass filter the noise centered around 10kHz
+                    // 1-pole HP at ~7kHz
+                    drumDsp.hatFilterHP = noiseVal * 0.45 + drumDsp.hatFilterHP * 0.55
+                    let hpHat = noiseVal - drumDsp.hatFilterHP
+                    // 1-pole LP at ~13kHz
+                    drumDsp.hatFilterLP = hpHat * 0.65 + drumDsp.hatFilterLP * 0.35
+                    let bpHat = drumDsp.hatFilterLP
                     
                     let hatEnv = exp(-drumDsp.hatTime * 85.0)
-                    sample += Float(hatVal * hatEnv * drumDsp.hatVolume)
+                    sample += Float(bpHat * hatEnv * drumDsp.hatVolume * 1.2) // slightly boost for clarity
                     
                     drumDsp.hatEnvelope = hatEnv
                     drumDsp.hatTime += 1.0 / sampleRate
@@ -990,12 +1018,17 @@ final class AudioEngine: @unchecked Sendable {
                 }
                 let crushedSample = drumDsp.pixelateHoldValue
                 
+                // 4. Analog Reconstruction Filter (Roll off harsh aliasing high frequency hiss at ~4.5 kHz)
+                let filterAlpha: Float = 0.28
+                drumDsp.filterState = crushedSample * filterAlpha + drumDsp.filterState * (1.0 - filterAlpha)
+                let filteredSample = drumDsp.filterState
+                
                 // Write mono sample to stereo output buffers
                 if abl.count >= 2 {
                     let leftPtr = abl[0].mData?.assumingMemoryBound(to: Float.self)
                     let rightPtr = abl[1].mData?.assumingMemoryBound(to: Float.self)
-                    leftPtr?[frame] = crushedSample
-                    rightPtr?[frame] = crushedSample
+                    leftPtr?[frame] = filteredSample
+                    rightPtr?[frame] = filteredSample
                 }
             }
             return noErr
