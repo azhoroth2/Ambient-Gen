@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var audioEngine = AudioEngine()
     @State private var isHoveringClose = false
+    @State private var hostingWindow: NSWindow?
 
     var body: some View {
         @Bindable var engine = audioEngine
@@ -283,7 +284,19 @@ struct ContentView: View {
                     HStack {
                         Spacer()
                         Button(action: {
-                            NSApp.terminate(nil)
+                            if let window = hostingWindow {
+                                NSAnimationContext.runAnimationGroup { ctx in
+                                    ctx.duration = 0.22
+                                    ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                                    window.animator().alphaValue = 0.0
+                                } completionHandler: {
+                                    Task { @MainActor in
+                                        NSApp.terminate(nil)
+                                    }
+                                }
+                            } else {
+                                NSApp.terminate(nil)
+                            }
                         }) {
                             Image(systemName: "power")
                                 .font(.system(size: 15, weight: .semibold))
@@ -334,6 +347,7 @@ struct ContentView: View {
         }
         .frame(width: 400, height: 680)
         .background(WindowAccessor { window in
+            self.hostingWindow = window
             window.isOpaque = false
             window.backgroundColor = .clear
             window.styleMask = [.borderless]
@@ -419,6 +433,20 @@ struct WindowAccessor: NSViewRepresentable {
                             ctx.duration = 0.22
                             ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                             window.animator().alphaValue = 1.0
+                        }
+                    }
+                }
+
+                NotificationCenter.default.addObserver(
+                    forName: NSWindow.didResignKeyNotification,
+                    object: window,
+                    queue: .main
+                ) { _ in
+                    Task { @MainActor in
+                        NSAnimationContext.runAnimationGroup { ctx in
+                            ctx.duration = 0.22
+                            ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                            window.animator().alphaValue = 0.0
                         }
                     }
                 }
