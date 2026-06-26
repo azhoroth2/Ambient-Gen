@@ -57,14 +57,3 @@ This script will:
 - **Audio Engine**: Custom synthesizer built on `AVFoundation` and standard Swift loops (using low-level audio processing and synthesis loops for generative binaural beats, noise, synth melody voices, and custom drum step-sequencer).
 - **Icon Rendering**: Vector graphics processed via Cocoa's `NSImage` drawing tools.
 
----
-
-## GitHub Repository Details
-
-If you are setting up the GitHub repository page, here are recommended details:
-
-### 📄 Repository Description
-> A beautiful, sound-reactive macOS menu bar app that generates procedural ambient soundscapes, binaural beats, and lo-fi beats, complete with an interactive Chladni plate sand visualizer.
-
-### 🏷️ Repository Topics
-`macos-app` `swiftui` `audio-generator` `binaural-beats` `generative-music` `ambient-sounds` `chladni-patterns` `sound-visualization` `lofi-beats`
