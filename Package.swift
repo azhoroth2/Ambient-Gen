@@ -7,7 +7,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "AmbientGen",
-            path: "Sources"
+            path: "Sources",
+            resources: [
+                .process("Icon.svg")
+            ]
         )
     ]
 )
