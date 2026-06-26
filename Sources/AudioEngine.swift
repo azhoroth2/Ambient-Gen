@@ -46,13 +46,14 @@ final class MelodyState: @unchecked Sendable {
         var releaseTime: Double = 4.0
         var releaseRate: Double = 0.0
         var startReleaseLevel: Double = 0.8
+        var triggerDelay: Int = 0
     }
 
     var voices: [Voice] = [Voice(), Voice(), Voice(), Voice(), Voice()]
     var activeVoiceIndex: Int = -1
 
-    // Timer: samples remaining until next note trigger
-    var samplesUntilNext: Int = 44100   // ~1s initial delay before first note
+    // Timer: samples remaining until next note trigger (aligned with drum start)
+    var samplesUntilNext: Int = 88200
 
     // Chord progression state
     var currentChordIndex: Int = 0
@@ -65,6 +66,11 @@ final class MelodyState: @unchecked Sendable {
     // Wow & Flutter LFO phases
     var wowPhase: Double = 0.0
     var flutterPhase: Double = 0.0
+    
+    var bpm: Double = 80.0
+    
+    var patternIndex: Int = 0
+    var activePatternIndex: Int = 0
 }
 
 /// Shared state for the generative procedural drums.
@@ -88,6 +94,13 @@ final class DrumState: @unchecked Sendable {
     
     // PRNG for snare and hat noise
     var rngState: UInt64 = 0x5678_ABCD_1234_EF01
+    
+    var bpm: Double = 80.0
+    
+    var pixelateCounter: Int = 0
+    var pixelateHoldValue: Float = 0.0
+    var patternIndex: Int = 0
+    var activePatternIndex: Int = 0
 }
 
 /// Real-time binaural-beat audio engine with pink noise and LFO.
@@ -124,6 +137,23 @@ final class AudioEngine: @unchecked Sendable {
     private(set) var snareLevel: Double = 0.0
     private(set) var hatLevel: Double = 0.0
 
+    /// Master volume scaling (0...1)
+    var globalVolume: Double = 1.0 {
+        didSet {
+            if isPlaying {
+                engine.mainMixerNode.outputVolume = Float(globalVolume)
+            }
+        }
+    }
+
+    /// Tempo (BPM) of the sequencers (50...120)
+    var bpm: Double = 80.0 {
+        didSet {
+            melodyDsp.bpm = bpm
+            drumDsp.bpm = bpm
+        }
+    }
+
     /// Volumes for each sound source (0...1)
     var oscVolume: Double = 0.25 {
         didSet { oscNode?.volume = Float(oscVolume) }
@@ -154,6 +184,7 @@ final class AudioEngine: @unchecked Sendable {
     private let melodyDsp = MelodyState()
     private let drumDsp = DrumState()
     private var fadeTask: Task<Void, Never>?
+    private var patternTimer: Timer?
 
     /// Amplitude ramp speed per sample. At 44100 Hz, ~20 ms ramp ≈ 882 samples.
     private static let rampStep: Double = 0.00113
@@ -200,6 +231,7 @@ final class AudioEngine: @unchecked Sendable {
     @MainActor
     func start() {
         fadeTask?.cancel()
+        patternTimer?.invalidate()
         setupIfNeeded()
         
         if !engine.isRunning {
@@ -214,6 +246,16 @@ final class AudioEngine: @unchecked Sendable {
         
         isPlaying = true
         
+        patternTimer = Timer.scheduledTimer(withTimeInterval: 180.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self = self else { return }
+                let nextPattern = (self.melodyDsp.patternIndex + 1) % 3
+                self.melodyDsp.patternIndex = nextPattern
+                self.drumDsp.patternIndex = nextPattern
+                print("AudioEngine: advanced pattern to \(nextPattern)")
+            }
+        }
+        
         fadeTask = Task {
             let duration = 1.5 // seconds
             let steps = 50
@@ -223,17 +265,19 @@ final class AudioEngine: @unchecked Sendable {
             for step in 1...steps {
                 if Task.isCancelled { return }
                 let t = Double(step) / Double(steps)
-                let vol = startVol + (1.0 - startVol) * t
+                let vol = startVol + (self.globalVolume - startVol) * t
                 engine.mainMixerNode.outputVolume = Float(vol)
                 try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
             }
-            engine.mainMixerNode.outputVolume = 1.0
+            engine.mainMixerNode.outputVolume = Float(self.globalVolume)
         }
     }
 
     @MainActor
     func stop() {
         fadeTask?.cancel()
+        patternTimer?.invalidate()
+        patternTimer = nil
         
         guard isPlaying else { return }
         isPlaying = false
@@ -260,6 +304,15 @@ final class AudioEngine: @unchecked Sendable {
             self.kickLevel = 0.0
             self.snareLevel = 0.0
             self.hatLevel = 0.0
+            self.melodyDsp.samplesUntilNext = 88200
+            self.melodyDsp.activeVoiceIndex = -1
+            for i in 0..<5 {
+                self.melodyDsp.voices[i] = MelodyState.Voice()
+            }
+            self.melodyDsp.patternIndex = 0
+            self.melodyDsp.activePatternIndex = 0
+            self.melodyDsp.currentChordIndex = 0
+            self.melodyDsp.beatsInCurrentChord = 0
             self.drumDsp.kickTime = -1.0
             self.drumDsp.snareTime = -1.0
             self.drumDsp.hatTime = -1.0
@@ -268,6 +321,8 @@ final class AudioEngine: @unchecked Sendable {
             self.drumDsp.hatEnvelope = 0.0
             self.drumDsp.currentStep = 0
             self.drumDsp.samplesUntilNextStep = 88200
+            self.drumDsp.patternIndex = 0
+            self.drumDsp.activePatternIndex = 0
         }
     }
 
@@ -397,30 +452,51 @@ final class AudioEngine: @unchecked Sendable {
                 // ── Note scheduling ──
                 melDsp.samplesUntilNext -= 1
                 if melDsp.samplesUntilNext <= 0 {
-                    // Transition current active voice (if any and if playing) to release
-                    let activeIdx = melDsp.activeVoiceIndex
-                    if activeIdx >= 0 && activeIdx < 5 {
-                        if melDsp.voices[activeIdx].stage != 0 && melDsp.voices[activeIdx].stage != 4 {
-                            melDsp.voices[activeIdx].stage = 4 // Release
-                            melDsp.voices[activeIdx].startReleaseLevel = melDsp.voices[activeIdx].envelopeValue
-                            let rTime = melDsp.voices[activeIdx].releaseTime
-                            melDsp.voices[activeIdx].releaseRate = melDsp.voices[activeIdx].envelopeValue / (rTime * sampleRate)
+                    // Transition all currently active voices that are NOT already releasing to release
+                    for i in 0..<5 {
+                        if melDsp.voices[i].stage != 0 && melDsp.voices[i].stage != 4 {
+                            melDsp.voices[i].stage = 4 // Release
+                            melDsp.voices[i].startReleaseLevel = melDsp.voices[i].envelopeValue
+                            let rTime = melDsp.voices[i].releaseTime
+                            melDsp.voices[i].releaseRate = melDsp.voices[i].envelopeValue / (rTime * sampleRate)
                         }
-                        melDsp.activeVoiceIndex = -1
                     }
+                    melDsp.activeVoiceIndex = -1
 
                     // Chord progression subsets of indices in `baseScale`
                     // baseScale: C3, D3, E3, F3, G3, A3, B3, C4, D4, E4, F4, G4, A4, B4, C5
-                    let chord0 = [5, 7, 9, 11, 12, 14]         // Am7
-                    let chord1 = [3, 5, 7, 9, 10, 12, 14]        // Fmaj7
-                    let chord2 = [0, 2, 4, 6, 7, 9, 11, 13, 14] // Cmaj7
-                    let chord3 = [1, 2, 4, 6, 8, 9, 11, 13]      // G6
+                    let chords: [[Int]]
+                    switch melDsp.activePatternIndex {
+                    case 1:
+                        // Pattern 1: Warm Jazz Turnaround (Dm7 -> G7 -> Cmaj7 -> A7)
+                        chords = [
+                            [1, 3, 5, 7, 9, 11],    // Dm7
+                            [4, 6, 8, 10, 12],      // G7
+                            [0, 2, 4, 6, 7, 9, 11],  // Cmaj7
+                            [5, 7, 9, 11, 13]       // A7
+                        ]
+                    case 2:
+                        // Pattern 2: Modal Lydian (Fmaj7#11 -> G/F -> Em7 -> Am9)
+                        chords = [
+                            [3, 5, 7, 9, 11, 13],  // Fmaj7#11
+                            [4, 6, 8, 10, 11],     // G/F
+                            [2, 4, 6, 8, 11, 13],  // Em7
+                            [5, 7, 9, 11, 13, 14]  // Am9
+                        ]
+                    default:
+                        // Pattern 0: Classic Pentatonic / Diatonic (Am7 -> Fmaj7 -> Cmaj7 -> G6)
+                        chords = [
+                            [5, 7, 9, 11, 12, 14],          // Am7
+                            [3, 5, 7, 9, 10, 12, 14],       // Fmaj7
+                            [0, 2, 4, 6, 7, 9, 11, 13, 14],  // Cmaj7
+                            [1, 2, 4, 6, 8, 9, 11, 13]       // G6
+                        ]
+                    }
                     
-                    let chords = [chord0, chord1, chord2, chord3]
                     let currentChord = chords[melDsp.currentChordIndex]
                     
-                    // Decide duration of the note in beats (1 beat = 33076 samples at 44.1kHz, which is 80 BPM)
-                    let beatLengthSamples = 33076
+                    // Decide duration of the note in beats (calculated dynamically from bpm)
+                    let beatLengthSamples = Int((60.0 / melDsp.bpm) * sampleRate)
                     
                     // Choose duration (1, 2, 3, 4, 6, or 8 beats)
                     let durRoll = Self.nextRandomUnit(&melDsp.rngState)
@@ -446,83 +522,12 @@ final class AudioEngine: @unchecked Sendable {
                         melDsp.currentChordIndex = (melDsp.currentChordIndex + 1) % 4
                     }
                     
-                    // 15% chance of playing silence (rests/pause in the pad melody)
-                    let playChance = Self.nextRandomUnit(&melDsp.rngState)
-                    if playChance > 0.15 {
-                        // Perform random walk or random pick on the chord scale index
-                        let walkRoll = Self.nextRandomUnit(&melDsp.rngState)
-                        var nextIndex = melDsp.lastNoteScaleIndex
-                        
-                        if walkRoll < 0.30 {
-                            // 30% chance: pick a completely random note within the current chord (adds interesting leaps)
-                            nextIndex = Int(Self.nextRandomUnit(&melDsp.rngState) * Double(currentChord.count))
-                        } else {
-                            // 70% chance: walk or jump
-                            let moveRoll = Self.nextRandomUnit(&melDsp.rngState)
-                            if moveRoll < 0.20 {
-                                nextIndex += 1 // Step up
-                            } else if moveRoll < 0.40 {
-                                nextIndex -= 1 // Step down
-                            } else if moveRoll < 0.55 {
-                                nextIndex += 2 // Jump up 2
-                            } else if moveRoll < 0.70 {
-                                nextIndex -= 2 // Jump down 2
-                            } else if moveRoll < 0.80 {
-                                nextIndex += 3 // Jump up 3
-                            } else if moveRoll < 0.90 {
-                                nextIndex -= 3 // Jump down 3
-                            } // 10% chance: keep same index
-                        }
-                        
-                        // Clamp index to the chord scale size
-                        if nextIndex < 0 {
-                            nextIndex = 0
-                        } else if nextIndex >= currentChord.count {
-                            nextIndex = currentChord.count - 1
-                        }
-                        
-                        melDsp.lastNoteScaleIndex = nextIndex
-                        
-                        // Get frequency
-                        let scaleIdx = currentChord[nextIndex]
-                        let baseFreq = Self.baseScale[scaleIdx]
-                        
-                        // Apply micro-detune: ±1.2 Hz random offset for organic analog feel
-                        let detune = (Self.nextRandomUnit(&melDsp.rngState) * 2.0 - 1.0) * 1.2
-                        
-                        // Apply octave shifting (adds variety in high/low registers)
-                        var octaveShift = 1.0
-                        let octaveRoll = Self.nextRandomUnit(&melDsp.rngState)
-                        if octaveRoll < 0.12 {
-                            octaveShift = 2.0 // Transpose 1 octave up
-                        } else if octaveRoll < 0.20 {
-                            octaveShift = 0.5 // Transpose 1 octave down
-                        }
-                        
-                        let frequency = (baseFreq + detune) * octaveShift
-                        
-                        // Randomize amplitude factor (0.7 to 1.0)
-                        let ampFactor = 0.7 + Self.nextRandomUnit(&melDsp.rngState) * 0.3
-                        
-                        // Scale envelope times based on duration to prevent cut-offs for faster notes
-                        let durationSecs = Double(durationBeats) * (Double(beatLengthSamples) / sampleRate)
-                        
-                        // Attack time: generally 40% of duration, clamped between 0.3s and 2.2s
-                        let maxAttack = min(2.2, durationSecs * 0.4)
-                        let minAttack = min(1.2, durationSecs * 0.2)
-                        let randomizedAttackTime = minAttack + Self.nextRandomUnit(&melDsp.rngState) * (maxAttack - minAttack)
-                        let attackRate = 1.0 / (randomizedAttackTime * sampleRate)
-                        
-                        // Decay: 20% of duration, clamped between 0.15s and 0.6s
-                        let maxDecay = min(0.6, durationSecs * 0.2)
-                        let minDecay = min(0.4, durationSecs * 0.1)
-                        let randomizedDecayTime = minDecay + Self.nextRandomUnit(&melDsp.rngState) * (maxDecay - minDecay)
-                        let decayRate = 0.2 / (randomizedDecayTime * sampleRate)
-                        
-                        // Release: long tail, but also scaled to note duration
-                        let randomizedReleaseTime = (2.0 + Self.nextRandomUnit(&melDsp.rngState) * 2.0) * min(2.0, Double(durationBeats) * 0.5)
-                        
-                        // Find a voice
+                    if melDsp.beatsInCurrentChord == 0 {
+                        melDsp.activePatternIndex = melDsp.patternIndex
+                    }
+                    
+                    // Closure to trigger a voice
+                    let triggerVoice = { (freq: Double, amp: Double, attRate: Double, decRate: Double, relTime: Double, delay: Int) in
                         var selectedVoiceIndex = -1
                         for i in 0..<5 {
                             if melDsp.voices[i].stage == 0 {
@@ -539,25 +544,123 @@ final class AudioEngine: @unchecked Sendable {
                                 }
                             }
                         }
-                        
                         if selectedVoiceIndex >= 0 {
-                            melDsp.voices[selectedVoiceIndex].frequency = frequency
+                            melDsp.voices[selectedVoiceIndex].frequency = freq
                             melDsp.voices[selectedVoiceIndex].phase = 0.0
                             melDsp.voices[selectedVoiceIndex].envelopeValue = 0.0
                             melDsp.voices[selectedVoiceIndex].stage = 1 // Attack
-                            
-                            melDsp.voices[selectedVoiceIndex].amplitudeFactor = ampFactor
-                            melDsp.voices[selectedVoiceIndex].attackRate = attackRate
-                            melDsp.voices[selectedVoiceIndex].decayRate = decayRate
-                            melDsp.voices[selectedVoiceIndex].releaseTime = randomizedReleaseTime
-                            
+                            melDsp.voices[selectedVoiceIndex].amplitudeFactor = amp
+                            melDsp.voices[selectedVoiceIndex].attackRate = attRate
+                            melDsp.voices[selectedVoiceIndex].decayRate = decRate
+                            melDsp.voices[selectedVoiceIndex].releaseTime = relTime
+                            melDsp.voices[selectedVoiceIndex].releaseRate = 0.0
+                            melDsp.voices[selectedVoiceIndex].startReleaseLevel = 0.8
+                            melDsp.voices[selectedVoiceIndex].triggerDelay = delay
                             melDsp.activeVoiceIndex = selectedVoiceIndex
                         }
                     }
                     
-                    // Schedule next note trigger: duration in samples plus a small humanizing timing jitter (±800 samples)
-                    let humanJitter = Int((Self.nextRandomUnit(&melDsp.rngState) * 2.0 - 1.0) * 800.0)
-                    melDsp.samplesUntilNext = durationBeats * beatLengthSamples + humanJitter
+                    // 15% chance of playing silence (rests/pause in the pad melody)
+                    let playChance = Self.nextRandomUnit(&melDsp.rngState)
+                    if playChance > 0.15 {
+                        // Perform random walk or random pick on the chord scale index
+                        let walkRoll = Self.nextRandomUnit(&melDsp.rngState)
+                        var nextIndex = melDsp.lastNoteScaleIndex
+                        
+                        if walkRoll < 0.30 {
+                            nextIndex = Int(Self.nextRandomUnit(&melDsp.rngState) * Double(currentChord.count))
+                        } else {
+                            let moveRoll = Self.nextRandomUnit(&melDsp.rngState)
+                            if moveRoll < 0.20 {
+                                nextIndex += 1
+                            } else if moveRoll < 0.40 {
+                                nextIndex -= 1
+                            } else if moveRoll < 0.55 {
+                                nextIndex += 2
+                            } else if moveRoll < 0.70 {
+                                nextIndex -= 2
+                            } else if moveRoll < 0.80 {
+                                nextIndex += 3
+                            } else if moveRoll < 0.90 {
+                                nextIndex -= 3
+                            }
+                        }
+                        
+                        // Clamp index to the chord scale size
+                        if nextIndex < 0 {
+                            nextIndex = 0
+                        } else if nextIndex >= currentChord.count {
+                            nextIndex = currentChord.count - 1
+                        }
+                        
+                        melDsp.lastNoteScaleIndex = nextIndex
+                        
+                        // Decide chord density: 20% Triad, 40% Dyad, 40% Solo
+                        let densityRoll = Self.nextRandomUnit(&melDsp.rngState)
+                        let offsets: [Int]
+                        if densityRoll < 0.20 {
+                            offsets = [0, 2, 4]
+                        } else if densityRoll < 0.60 {
+                            offsets = [0, 2]
+                        } else {
+                            offsets = [0]
+                        }
+                        
+                        // Apply octave shifting (adds variety in high/low registers)
+                        var octaveShift = 1.0
+                        let octaveRoll = Self.nextRandomUnit(&melDsp.rngState)
+                        if octaveRoll < 0.12 {
+                            octaveShift = 2.0
+                        } else if octaveRoll < 0.20 {
+                            octaveShift = 0.5
+                        }
+                        
+                        // Scale envelope times based on duration to prevent cut-offs for faster notes
+                        let durationSecs = Double(durationBeats) * (Double(beatLengthSamples) / sampleRate)
+                        
+                        let maxAttack = min(2.2, durationSecs * 0.4)
+                        let minAttack = min(1.2, durationSecs * 0.2)
+                        let randomizedAttackTime = minAttack + Self.nextRandomUnit(&melDsp.rngState) * (maxAttack - minAttack)
+                        let attackRate = 1.0 / (randomizedAttackTime * sampleRate)
+                        
+                        let maxDecay = min(0.6, durationSecs * 0.2)
+                        let minDecay = min(0.4, durationSecs * 0.1)
+                        let randomizedDecayTime = minDecay + Self.nextRandomUnit(&melDsp.rngState) * (maxDecay - minDecay)
+                        let decayRate = 0.2 / (randomizedDecayTime * sampleRate)
+                        
+                        let randomizedReleaseTime = (2.0 + Self.nextRandomUnit(&melDsp.rngState) * 2.0) * min(2.0, Double(durationBeats) * 0.5)
+                        
+                        for offset in offsets {
+                            let offsetIdx = nextIndex + offset
+                            let scaleIdx: Int
+                            let octaveMul: Double
+                            if offsetIdx < currentChord.count {
+                                scaleIdx = currentChord[offsetIdx]
+                                octaveMul = 1.0
+                            } else {
+                                scaleIdx = currentChord[offsetIdx % currentChord.count]
+                                octaveMul = 2.0
+                            }
+                            
+                            let baseFreq = Self.baseScale[scaleIdx]
+                            let detune = (Self.nextRandomUnit(&melDsp.rngState) * 2.0 - 1.0) * 1.2
+                            let frequency = (baseFreq + detune) * octaveShift * octaveMul
+                            let ampFactor = (0.7 + Self.nextRandomUnit(&melDsp.rngState) * 0.3) / Double(offsets.count)
+                            
+                            let baseDelay: Int
+                            if offset == 0 {
+                                baseDelay = Int(Self.nextRandomUnit(&melDsp.rngState) * 400.0)
+                            } else if offset == 2 {
+                                baseDelay = 800 + Int(Self.nextRandomUnit(&melDsp.rngState) * 600.0)
+                            } else {
+                                baseDelay = 1600 + Int(Self.nextRandomUnit(&melDsp.rngState) * 800.0)
+                            }
+                            
+                            triggerVoice(frequency, ampFactor, attackRate, decayRate, randomizedReleaseTime, baseDelay)
+                        }
+                    }
+                    
+                    melDsp.samplesUntilNext = durationBeats * beatLengthSamples
                 }
 
                 // ── Synthesis & Envelope ──
@@ -578,6 +681,12 @@ final class AudioEngine: @unchecked Sendable {
                     var voice = melDsp.voices[i]
                     if voice.stage == 0 { continue }
 
+                    if voice.triggerDelay > 0 {
+                        voice.triggerDelay -= 1
+                        melDsp.voices[i] = voice
+                        continue
+                    }
+
                     // Process envelope
                     switch voice.stage {
                     case 1: // Attack
@@ -593,7 +702,6 @@ final class AudioEngine: @unchecked Sendable {
                             voice.stage = 3 // Sustain
                         }
                     case 3: // Sustain
-                        // Remains 0.8 until release starts
                         break
                     case 4: // Release
                         voice.envelopeValue -= voice.releaseRate
@@ -667,53 +775,91 @@ final class AudioEngine: @unchecked Sendable {
                 // 1. Sequencer step timing
                 drumDsp.samplesUntilNextStep -= 1
                 if drumDsp.samplesUntilNextStep <= 0 {
-                    drumDsp.samplesUntilNextStep = 8269 // 16th step at 80 BPM
+                    let beatLengthSamples = (60.0 / drumDsp.bpm) * sampleRate
+                    drumDsp.samplesUntilNextStep = Int(beatLengthSamples / 4.0)
                     
                     let step = drumDsp.currentStep
                     
-                    // Procedural Boom-Bap sequencer rules (probabilistic & organic)
-                    // Kick probability:
-                    var triggerKick = false
+                    // Sync patternIndex on step 0
                     if step == 0 {
-                        triggerKick = true // Downbeat is guaranteed
-                    } else if step == 8 {
-                        triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.90 // 90% chance
-                    } else if step == 10 {
-                        triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.70 // 70% chance of double kick syncopation
-                    } else if step == 6 || step == 14 {
-                        triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.15 // 15% chance of a ghost kick
+                        drumDsp.activePatternIndex = drumDsp.patternIndex
+                    }
+                    
+                    let pattern = drumDsp.activePatternIndex
+                    var triggerKick = false
+                    var triggerSnare = false
+                    var triggerHat = false
+                    var accent = false
+                    
+                    switch pattern {
+                    case 1:
+                        // Pattern 1: Shaker style
+                        triggerHat = true
+                        accent = (step % 4 == 0)
+                        
+                        if step == 0 {
+                            triggerKick = true
+                        } else if step == 8 {
+                            triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.90
+                        } else if step == 11 {
+                            triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.80
+                        }
+                        
+                        if step == 4 || step == 12 {
+                            triggerSnare = true
+                        }
+                        
+                    case 2:
+                        // Pattern 2: Halftime Ambient
+                        if step % 2 == 1 {
+                            triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.80
+                            accent = (step % 4 == 1)
+                        }
+                        
+                        if step == 0 {
+                            triggerKick = true
+                        } else if step == 10 {
+                            triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.80
+                        }
+                        
+                        if step == 8 {
+                            triggerSnare = true
+                        }
+                        
+                    default:
+                        // Pattern 0: Classic Boom-Bap
+                        if step == 0 {
+                            triggerKick = true
+                        } else if step == 8 {
+                            triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.90
+                        } else if step == 10 {
+                            triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.70
+                        } else if step == 6 || step == 14 {
+                            triggerKick = Self.nextRandomUnit(&drumDsp.rngState) < 0.15
+                        }
+                        
+                        if step == 4 || step == 12 {
+                            triggerSnare = true
+                        } else if step == 15 {
+                            triggerSnare = Self.nextRandomUnit(&drumDsp.rngState) < 0.20
+                        }
+                        
+                        if step % 2 == 0 {
+                            triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.95
+                            accent = (step % 4 == 0)
+                        } else {
+                            triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.18
+                        }
                     }
                     
                     if triggerKick {
                         drumDsp.kickTime = 0.0
                         drumDsp.kickPhase = 0.0
                     }
-                    
-                    // Snare probability:
-                    var triggerSnare = false
-                    if step == 4 || step == 12 {
-                        triggerSnare = true // Backbeat is guaranteed
-                    } else if step == 15 {
-                        triggerSnare = Self.nextRandomUnit(&drumDsp.rngState) < 0.20 // 20% chance of a fill/pickup snare
-                    }
-                    
                     if triggerSnare {
                         drumDsp.snareTime = 0.0
                         drumDsp.snarePhase = 0.0
                     }
-                    
-                    // Hi-Hat probability & rolls:
-                    // Usually plays on even steps, but occasionally plays sixteenth notes or rolls
-                    var triggerHat = false
-                    var accent = false
-                    if step % 2 == 0 {
-                        triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.95 // 95% on-beat hat
-                        accent = (step % 4 == 0)
-                    } else {
-                        // 15% chance of a 16th note subdivision (hi-hat roll/fill)
-                        triggerHat = Self.nextRandomUnit(&drumDsp.rngState) < 0.18
-                    }
-                    
                     if triggerHat {
                         drumDsp.hatTime = 0.0
                         let baseVol = accent ? 0.06 : 0.03
@@ -790,12 +936,21 @@ final class AudioEngine: @unchecked Sendable {
                     drumDsp.hatEnvelope = 0.0
                 }
                 
+                // 3. Apply Bitcrusher (4x downsampling, 8-bit amplitude quantization)
+                drumDsp.pixelateCounter += 1
+                if drumDsp.pixelateCounter >= 4 {
+                    drumDsp.pixelateCounter = 0
+                    let clamped = max(-1.0, min(1.0, sample))
+                    drumDsp.pixelateHoldValue = Float(round(Double(clamped) * 256.0) / 256.0)
+                }
+                let crushedSample = drumDsp.pixelateHoldValue
+                
                 // Write mono sample to stereo output buffers
                 if abl.count >= 2 {
                     let leftPtr = abl[0].mData?.assumingMemoryBound(to: Float.self)
                     let rightPtr = abl[1].mData?.assumingMemoryBound(to: Float.self)
-                    leftPtr?[frame] = sample
-                    rightPtr?[frame] = sample
+                    leftPtr?[frame] = crushedSample
+                    rightPtr?[frame] = crushedSample
                 }
             }
             return noErr

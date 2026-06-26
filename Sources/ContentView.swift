@@ -251,7 +251,7 @@ struct ContentView: View {
                     }
                 }
 
-                // Play / Stop button in the absolute geometric center (square, no text)
+                // Play / Stop button in the absolute geometric center (circle, no text)
                 Button(action: {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         audioEngine.toggle()
@@ -265,12 +265,12 @@ struct ContentView: View {
                         .background(
                             Group {
                                 if audioEngine.isPlaying {
-                                    Rectangle()
+                                    Circle()
                                         .fill(Color.white)
                                 } else {
-                                    Rectangle()
+                                    Circle()
                                         .strokeBorder(Color.white, lineWidth: 1.5)
-                                        .background(Rectangle().fill(Color.black)) // prevent showing pixel grid lines under transparent button
+                                        .background(Circle().fill(Color.black)) // prevent showing pixel grid lines under transparent button
                                 }
                             }
                         )
@@ -293,7 +293,18 @@ struct ContentView: View {
                     Spacer()
                 }
                 
-                VStack(spacing: 14) {
+                // Global Controls
+                VStack(spacing: 12) {
+                    MixerSlider(icon: "speaker.wave.3.fill", label: "Master Volume", value: $engine.globalVolume)
+                    TempoSlider(bpm: $engine.bpm)
+                }
+                
+                Divider()
+                    .background(Color.white.opacity(0.08))
+                    .padding(.horizontal, 8)
+                
+                // Channel Controls
+                VStack(spacing: 12) {
                     MixerSlider(icon: "waveform", label: "Binaural Beats", value: $engine.oscVolume)
                     MixerSlider(icon: "wind", label: "Pink Noise", value: $engine.noiseVolume)
                     MixerSlider(icon: "music.note", label: "Ambient Synth", value: $engine.melodyVolume)
@@ -304,13 +315,11 @@ struct ContentView: View {
             .padding(.vertical, 20)
             .background(Color(white: 0.05))
         }
-        .frame(width: 400, height: 580)
+        .frame(width: 400, height: 680)
         .background(WindowAccessor { window in
             window.isOpaque = false
             window.backgroundColor = .clear
-            window.styleMask.insert(.fullSizeContentView)
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .hidden
+            window.styleMask = [.borderless]
             window.hasShadow = true
             window.invalidateShadow()
         })
@@ -402,6 +411,34 @@ struct MixerSlider: View {
                 }
                 
                 Slider(value: $value, in: 0...1)
+                    .tint(.white)
+            }
+        }
+    }
+}
+
+struct TempoSlider: View {
+    @Binding var bpm: Double
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "metronome")
+                .font(.system(size: 13))
+                .foregroundColor(.white.opacity(0.7))
+                .frame(width: 20, alignment: .center)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("Tempo")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(.white.opacity(0.85))
+                    Spacer()
+                    Text("\(Int(bpm)) BPM")
+                        .font(.system(size: 11, weight: .regular, design: .monospaced))
+                        .foregroundColor(.white.opacity(0.55))
+                }
+                
+                Slider(value: $bpm, in: 50...200, step: 1)
                     .tint(.white)
             }
         }
