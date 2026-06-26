@@ -152,6 +152,7 @@ struct VisualVoiceInfo: Sendable {
 }
 
 @Observable
+@MainActor
 final class AudioEngine: @unchecked Sendable {
 
     // MARK: - Public State

@@ -359,7 +359,7 @@ struct ContentView: View {
     }
 
     /// Determines Chladni plate vibration modes and formula style procedurally based on active melody frequency.
-    private func getChladniParameters(frequency: Double) -> (n: Double, m: Double, style: Int) {
+    nonisolated private func getChladniParameters(frequency: Double) -> (n: Double, m: Double, style: Int) {
         if frequency <= 0 { return (2.0, 3.0, 0) }
         
         // Deterministic procedural hash from the frequency
@@ -380,7 +380,7 @@ struct ContentView: View {
     }
 
     /// Calculates the Chladni plate displacement at a given normalized coordinate.
-    private func calculateChladni(u: Double, v: Double, n: Double, m: Double, style: Int, time: Double) -> Double {
+    nonisolated private func calculateChladni(u: Double, v: Double, n: Double, m: Double, style: Int, time: Double) -> Double {
         // Slow time-based LFO to drift the modes slightly (adds fluid organic morphing)
         let nMod = n + sin(time * 0.4) * 0.12
         let mMod = m + cos(time * 0.3) * 0.12
