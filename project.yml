@@ -20,6 +20,8 @@ targets:
       properties:
         LSUIElement: true
         NSHighResolutionCapable: true
+    dependencies:
+      - target: AmbientGenWidget
 
   AmbientGenWidget:
     type: app-extension
