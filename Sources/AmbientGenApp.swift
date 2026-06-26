@@ -2,8 +2,6 @@ import SwiftUI
 
 @main
 struct AmbientGenApp: App {
-    @State private var audioEngine = AudioEngine()
-    @State private var widgetManager = WidgetWindowManager()
 
     init() {
         // Run as an accessory app (menu bar utility, hides Dock icon)
@@ -14,7 +12,7 @@ struct AmbientGenApp: App {
 
     // Load the custom menu bar icon from resources
     private var menuBarIcon: NSImage? {
-        guard let url = Bundle.main.url(forResource: "Icon", withExtension: "svg"),
+        guard let url = Bundle.module.url(forResource: "Icon", withExtension: "svg"),
               let image = NSImage(contentsOf: url) else {
             return nil
         }
@@ -24,7 +22,7 @@ struct AmbientGenApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            ContentView(audioEngine: audioEngine, widgetManager: widgetManager)
+            ContentView()
         } label: {
             if let image = menuBarIcon {
                 Image(nsImage: image)

@@ -8,6 +8,7 @@ let package = Package(
         .executableTarget(
             name: "AmbientGen",
             path: "Sources",
+            exclude: ["Info.plist"],
             resources: [
                 .process("Icon.svg")
             ]
