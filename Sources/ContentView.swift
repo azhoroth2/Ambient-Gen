@@ -1,4 +1,5 @@
 import SwiftUI
+import ObjectiveC
 
 struct ContentView: View {
     @State private var audioEngine = AudioEngine()
@@ -411,6 +412,9 @@ struct WindowAccessor: NSViewRepresentable {
             if let window = view.window {
                 callback(window)
                 
+                // Enable dynamic subclass to intercept orderOut and fade out smoothly
+                makeWindowDynamicSubclass(window: window)
+                
                 Task { @MainActor in
                     // Initial smooth fade-in
                     window.alphaValue = 0.0
@@ -436,26 +440,70 @@ struct WindowAccessor: NSViewRepresentable {
                         }
                     }
                 }
-
-                NotificationCenter.default.addObserver(
-                    forName: NSWindow.didResignKeyNotification,
-                    object: window,
-                    queue: .main
-                ) { _ in
-                    Task { @MainActor in
-                        NSAnimationContext.runAnimationGroup { ctx in
-                            ctx.duration = 0.22
-                            ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                            window.animator().alphaValue = 0.0
-                        }
-                    }
-                }
             }
         }
         return view
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
+/// Dynamically subclasses the window at runtime to intercept `orderOut(_:)` and perform a smooth fade-out animation.
+private func makeWindowDynamicSubclass(window: NSWindow) {
+    let originalClass: AnyClass = object_getClass(window)!
+    let cName = class_getName(originalClass)
+    let className = String(cString: cName) + "_Animated"
+    
+    // Check if the class already exists
+    var subclass: AnyClass? = objc_getClass(className) as? AnyClass
+    if subclass == nil {
+        subclass = objc_allocateClassPair(originalClass, className, 0)
+        guard let subclass = subclass else { return }
+        
+        let orderOutSelector = #selector(NSWindow.orderOut(_:))
+        guard let method = class_getInstanceMethod(originalClass, orderOutSelector) else { return }
+        let typeEncoding = method_getTypeEncoding(method)
+        
+        let imp: @convention(block) (AnyObject, AnyObject?) -> Void = { selfObject, _ in
+            guard let window = selfObject as? NSWindow else { return }
+            
+            MainActor.assumeIsolated {
+                // If already transparent, hide immediately
+                if window.alphaValue == 0.0 {
+                    let originalImp = class_getMethodImplementation(originalClass, orderOutSelector)
+                    typealias Fn = @convention(c) (AnyObject, Selector, AnyObject?) -> Void
+                    let fn = unsafeBitCast(originalImp, to: Fn.self)
+                    fn(window, orderOutSelector, nil)
+                    return
+                }
+                
+                // Run fade out animation
+                NSAnimationContext.runAnimationGroup { ctx in
+                    ctx.duration = 0.22
+                    ctx.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                    window.animator().alphaValue = 0.0
+                } completionHandler: {
+                    Task { @MainActor in
+                        let originalImp = class_getMethodImplementation(originalClass, orderOutSelector)
+                        typealias Fn = @convention(c) (AnyObject, Selector, AnyObject?) -> Void
+                        let fn = unsafeBitCast(originalImp, to: Fn.self)
+                        fn(window, orderOutSelector, nil)
+                        
+                        // Reset alpha for next presentation
+                        window.alphaValue = 1.0
+                    }
+                }
+            }
+        }
+        
+        let impAddress = imp_implementationWithBlock(imp)
+        class_addMethod(subclass, orderOutSelector, impAddress, typeEncoding)
+        objc_registerClassPair(subclass)
+    }
+    
+    if let subclass = subclass {
+        object_setClass(window, subclass)
+    }
 }
 
 struct MixerSlider: View {
