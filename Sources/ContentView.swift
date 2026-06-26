@@ -285,8 +285,8 @@ struct ContentView: View {
                         Button(action: {
                             NSApp.terminate(nil)
                         }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 16, weight: .medium))
+                            Image(systemName: "power")
+                                .font(.system(size: 15, weight: .semibold))
                                 .foregroundColor(isHoveringClose ? .white.opacity(0.8) : .white.opacity(0.35))
                                 .animation(.easeInOut(duration: 0.15), value: isHoveringClose)
                                 .padding(14)
