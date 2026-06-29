@@ -1,0 +1,31 @@
+{
+  "": {
+    "dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/Ambeat.d",
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/Ambeat.o",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/master.swiftdeps"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbeatApp.swift": {
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AmbeatApp.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AmbeatApp~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AmbeatApp.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AmbeatApp.dia"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift": {
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AudioEngine.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AudioEngine~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AudioEngine.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/AudioEngine.dia"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift": {
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/ContentView.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/ContentView~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/ContentView.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/ContentView.dia"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/DerivedSources/resource_bundle_accessor.swift": {
+    "object": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/resource_bundle_accessor.swift.o",
+    "swiftmodule": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/resource_bundle_accessor~partial.swiftmodule",
+    "swift-dependencies": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/resource_bundle_accessor.swiftdeps",
+    "diagnostics": "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/release/Ambeat.build/resource_bundle_accessor.dia"
+  }
+}

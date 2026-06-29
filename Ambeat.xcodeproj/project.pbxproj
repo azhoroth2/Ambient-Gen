@@ -1,0 +1,460 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		236A8238A649E445CA7903CA /* WidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A04848EB9E0F18E8D4C308C /* WidgetView.swift */; };
+		66F7654363B60A7DD597B453 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9724B7C6674955732A26555 /* AudioEngine.swift */; };
+		685890E02A889F82888D35DB /* AmbeatWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C8D2A59DE24D27B3355FAD5A /* AmbeatWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6F3D28457C41496A86CBDF14 /* WidgetStateBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B1C0164FAA85CB9FF7D31E /* WidgetStateBridge.swift */; };
+		7E3111C63366B45D3583B0EB /* Icon.svg in Resources */ = {isa = PBXBuildFile; fileRef = 599685F6260275949F4C2EAA /* Icon.svg */; };
+		92D51B6E5D3D326D177AD330 /* WidgetStateBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B1C0164FAA85CB9FF7D31E /* WidgetStateBridge.swift */; };
+		9A043B7ABB0C2AA4D9D4275D /* AmbeatWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C16A0C3C6A65689C9EB509 /* AmbeatWidget.swift */; };
+		C18411E96475DAF265B4388B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 865FA8A52A7A11791FFE5AD3 /* ContentView.swift */; };
+		DDECCA94F5A38DA49649DDA1 /* TogglePlaybackIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18E2A76713ABB7FEA3F1F48D /* TogglePlaybackIntent.swift */; };
+		E4E9752479AE1F8B9809BF93 /* AmbeatApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A22766BB93B088261068FA69 /* AmbeatApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E7A6EBE211DBA6F420FA462A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ECD2CF0A2D158A2CEA04C813 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9346033542227C67B9674D79;
+			remoteInfo = AmbeatWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		BF443C3A35AB266A65180B7A /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				685890E02A889F82888D35DB /* AmbeatWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		18E2A76713ABB7FEA3F1F48D /* TogglePlaybackIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePlaybackIntent.swift; sourceTree = "<group>"; };
+		599685F6260275949F4C2EAA /* Icon.svg */ = {isa = PBXFileReference; path = Icon.svg; sourceTree = "<group>"; };
+		5A04848EB9E0F18E8D4C308C /* WidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetView.swift; sourceTree = "<group>"; };
+		5E84F1FC4B4DD64320B18F73 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7793CAB9CF92B1E4F29401D3 /* AmbeatWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AmbeatWidget.entitlements; sourceTree = "<group>"; };
+		865FA8A52A7A11791FFE5AD3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		88B1C0164FAA85CB9FF7D31E /* WidgetStateBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStateBridge.swift; sourceTree = "<group>"; };
+		A22766BB93B088261068FA69 /* AmbeatApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbeatApp.swift; sourceTree = "<group>"; };
+		A2C16A0C3C6A65689C9EB509 /* AmbeatWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbeatWidget.swift; sourceTree = "<group>"; };
+		B6987395117A41531ADC8B0C /* Ambeat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ambeat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C8D2A59DE24D27B3355FAD5A /* AmbeatWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AmbeatWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4783F9FD1334F56004E447E /* Ambeat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ambeat.entitlements; sourceTree = "<group>"; };
+		E9724B7C6674955732A26555 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
+		FA9271220718037EC0F5EEE0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		2904B20465D47B638B0B60CB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B6987395117A41531ADC8B0C /* Ambeat.app */,
+				C8D2A59DE24D27B3355FAD5A /* AmbeatWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D469188FC28DCED6C5E51FE0 = {
+			isa = PBXGroup;
+			children = (
+				E3B572C11C0051B39E2B87F9 /* Sources */,
+				F546D21837E833C4D3E34B58 /* WidgetSources */,
+				2904B20465D47B638B0B60CB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		E3B572C11C0051B39E2B87F9 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				E4783F9FD1334F56004E447E /* Ambeat.entitlements */,
+				A22766BB93B088261068FA69 /* AmbeatApp.swift */,
+				E9724B7C6674955732A26555 /* AudioEngine.swift */,
+				865FA8A52A7A11791FFE5AD3 /* ContentView.swift */,
+				599685F6260275949F4C2EAA /* Icon.svg */,
+				5E84F1FC4B4DD64320B18F73 /* Info.plist */,
+				88B1C0164FAA85CB9FF7D31E /* WidgetStateBridge.swift */,
+				5A04848EB9E0F18E8D4C308C /* WidgetView.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		F546D21837E833C4D3E34B58 /* WidgetSources */ = {
+			isa = PBXGroup;
+			children = (
+				7793CAB9CF92B1E4F29401D3 /* AmbeatWidget.entitlements */,
+				A2C16A0C3C6A65689C9EB509 /* AmbeatWidget.swift */,
+				FA9271220718037EC0F5EEE0 /* Info.plist */,
+				18E2A76713ABB7FEA3F1F48D /* TogglePlaybackIntent.swift */,
+			);
+			path = WidgetSources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		33BEC7B46E14C7E614D3A52E /* Ambeat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8127D84DDF83D77E3A992DC1 /* Build configuration list for PBXNativeTarget "Ambeat" */;
+			buildPhases = (
+				8023895F7D96B3DC5835C939 /* Sources */,
+				6761845B9F429DCEF784470F /* Resources */,
+				BF443C3A35AB266A65180B7A /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				433CBEC8AFCA69D94D4CE9E7 /* PBXTargetDependency */,
+			);
+			name = Ambeat;
+			packageProductDependencies = (
+			);
+			productName = Ambeat;
+			productReference = B6987395117A41531ADC8B0C /* Ambeat.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9346033542227C67B9674D79 /* AmbeatWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B473BE9C521280961B55694A /* Build configuration list for PBXNativeTarget "AmbeatWidget" */;
+			buildPhases = (
+				212103BF64096A85CFE09855 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AmbeatWidget;
+			packageProductDependencies = (
+			);
+			productName = AmbeatWidget;
+			productReference = C8D2A59DE24D27B3355FAD5A /* AmbeatWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ECD2CF0A2D158A2CEA04C813 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					33BEC7B46E14C7E614D3A52E = {
+						ProvisioningStyle = Automatic;
+					};
+					9346033542227C67B9674D79 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 940858211C512F7BF23614DD /* Build configuration list for PBXProject "Ambeat" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = D469188FC28DCED6C5E51FE0;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2904B20465D47B638B0B60CB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				33BEC7B46E14C7E614D3A52E /* Ambeat */,
+				9346033542227C67B9674D79 /* AmbeatWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6761845B9F429DCEF784470F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7E3111C63366B45D3583B0EB /* Icon.svg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		212103BF64096A85CFE09855 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A043B7ABB0C2AA4D9D4275D /* AmbeatWidget.swift in Sources */,
+				DDECCA94F5A38DA49649DDA1 /* TogglePlaybackIntent.swift in Sources */,
+				6F3D28457C41496A86CBDF14 /* WidgetStateBridge.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8023895F7D96B3DC5835C939 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4E9752479AE1F8B9809BF93 /* AmbeatApp.swift in Sources */,
+				66F7654363B60A7DD597B453 /* AudioEngine.swift in Sources */,
+				C18411E96475DAF265B4388B /* ContentView.swift in Sources */,
+				92D51B6E5D3D326D177AD330 /* WidgetStateBridge.swift in Sources */,
+				236A8238A649E445CA7903CA /* WidgetView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		433CBEC8AFCA69D94D4CE9E7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9346033542227C67B9674D79 /* AmbeatWidget */;
+			targetProxy = E7A6EBE211DBA6F420FA462A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		40F341C9BA7205A5170CDD1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = WidgetSources/AmbeatWidget.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = WidgetSources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ambigen.Ambeat.Widget;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5850B124792092BAE6D6B1AE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Sources/Ambeat.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Sources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ambigen.Ambeat;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		66F8E97D8D04996AC26B96C3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Sources/Ambeat.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Sources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ambigen.Ambeat;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		72495D76C2ED35D79A600D52 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		EB9E2A9A878494DE92E7E08B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = WidgetSources/AmbeatWidget.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = WidgetSources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ambigen.Ambeat.Widget;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FEAAB6272A47C4CE7280E225 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8127D84DDF83D77E3A992DC1 /* Build configuration list for PBXNativeTarget "Ambeat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5850B124792092BAE6D6B1AE /* Debug */,
+				66F8E97D8D04996AC26B96C3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		940858211C512F7BF23614DD /* Build configuration list for PBXProject "Ambeat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FEAAB6272A47C4CE7280E225 /* Debug */,
+				72495D76C2ED35D79A600D52 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		B473BE9C521280961B55694A /* Build configuration list for PBXNativeTarget "AmbeatWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40F341C9BA7205A5170CDD1F /* Debug */,
+				EB9E2A9A878494DE92E7E08B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = ECD2CF0A2D158A2CEA04C813 /* Project object */;
+}

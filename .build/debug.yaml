@@ -3,41 +3,41 @@ client:
   file-system: device-agnostic
 tools: {}
 targets:
-  "AmbientGen-arm64-apple-macosx26.0-debug.exe": ["<AmbientGen-arm64-apple-macosx26.0-debug.exe>"]
-  "AmbientGen-arm64-apple-macosx26.0-debug.module": ["<AmbientGen-arm64-apple-macosx26.0-debug.module>"]
+  "Ambeat-arm64-apple-macosx26.0-debug.exe": ["<Ambeat-arm64-apple-macosx26.0-debug.exe>"]
+  "Ambeat-arm64-apple-macosx26.0-debug.module": ["<Ambeat-arm64-apple-macosx26.0-debug.module>"]
   "PackageStructure": ["<PackageStructure>"]
-  "main": ["<AmbientGen-arm64-apple-macosx26.0-debug.exe>","<AmbientGen-arm64-apple-macosx26.0-debug.module>"]
-  "test": ["<AmbientGen-arm64-apple-macosx26.0-debug.exe>","<AmbientGen-arm64-apple-macosx26.0-debug.module>"]
+  "main": ["<Ambeat-arm64-apple-macosx26.0-debug.exe>","<Ambeat-arm64-apple-macosx26.0-debug.module>"]
+  "test": ["<Ambeat-arm64-apple-macosx26.0-debug.exe>","<Ambeat-arm64-apple-macosx26.0-debug.module>"]
 default: "main"
 nodes:
   "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/":
     is-directory-structure: true
     content-exclusion-patterns: [".git",".build"]
-  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen":
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat":
     is-mutated: true
 commands:
-  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist":
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat-entitlement.plist":
     tool: write-auxiliary-file
     inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
-    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist"]
-    description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist"
+    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat-entitlement.plist"]
+    description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat-entitlement.plist"
 
-  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources":
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/sources":
     tool: write-auxiliary-file
-    inputs: ["<sources-file-list>","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/DerivedSources/resource_bundle_accessor.swift"]
-    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources"]
-    description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources"
+    inputs: ["<sources-file-list>","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbeatApp.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/DerivedSources/resource_bundle_accessor.swift"]
+    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/sources"]
+    description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/sources"
 
-  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList":
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.product/Objects.LinkFileList":
     tool: write-auxiliary-file
-    inputs: ["<link-file-list>","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/resource_bundle_accessor.swift.o"]
-    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList"]
-    description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList"
+    inputs: ["<link-file-list>","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AmbeatApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/resource_bundle_accessor.swift.o"]
+    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.product/Objects.LinkFileList"
 
-  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen_AmbientGen.bundle/Icon.svg":
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat_Ambeat.bundle/Icon.svg":
     tool: copy-tool
     inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/Icon.svg"]
-    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen_AmbientGen.bundle/Icon.svg"]
+    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat_Ambeat.bundle/Icon.svg"]
     description: "Copying /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/Icon.svg"
 
   "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt":
@@ -47,41 +47,41 @@ commands:
     always-out-of-date: "true"
     description: "Write auxiliary file /Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
 
-  "<AmbientGen-arm64-apple-macosx26.0-debug.exe>":
+  "<Ambeat-arm64-apple-macosx26.0-debug.exe>":
     tool: phony
-    inputs: ["<AmbientGen-arm64-apple-macosx26.0-debug.exe-CodeSigning>"]
-    outputs: ["<AmbientGen-arm64-apple-macosx26.0-debug.exe>"]
+    inputs: ["<Ambeat-arm64-apple-macosx26.0-debug.exe-CodeSigning>"]
+    outputs: ["<Ambeat-arm64-apple-macosx26.0-debug.exe>"]
 
-  "<AmbientGen-arm64-apple-macosx26.0-debug.module>":
+  "<Ambeat-arm64-apple-macosx26.0-debug.module>":
     tool: phony
-    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/resource_bundle_accessor.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/AmbientGen.swiftmodule"]
-    outputs: ["<AmbientGen-arm64-apple-macosx26.0-debug.module>"]
+    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AmbeatApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/resource_bundle_accessor.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/Ambeat.swiftmodule"]
+    outputs: ["<Ambeat-arm64-apple-macosx26.0-debug.module>"]
 
-  "AmbientGen-arm64-apple-macosx26.0-debug.module-resources":
+  "Ambeat-arm64-apple-macosx26.0-debug.module-resources":
     tool: phony
-    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen_AmbientGen.bundle/Icon.svg"]
-    outputs: ["<AmbientGen-arm64-apple-macosx26.0-debug.module-resources>"]
+    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat_Ambeat.bundle/Icon.svg"]
+    outputs: ["<Ambeat-arm64-apple-macosx26.0-debug.module-resources>"]
 
-  "C.AmbientGen-arm64-apple-macosx26.0-debug.exe":
+  "C.Ambeat-arm64-apple-macosx26.0-debug.exe":
     tool: shell
-    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/resource_bundle_accessor.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList"]
-    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen"]
-    description: "Linking ./.build/arm64-apple-macosx/debug/AmbientGen"
-    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug","-o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen","-module-name","AmbientGen","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_AmbientGen_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx","-target","arm64-apple-macosx14.0","-Xlinker","-add_ast_path","-Xlinker","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/AmbientGen.swiftmodule","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
+    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AmbeatApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/resource_bundle_accessor.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.product/Objects.LinkFileList"]
+    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat"]
+    description: "Linking ./.build/arm64-apple-macosx/debug/Ambeat"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug","-o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat","-module-name","Ambeat","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_Ambeat_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx","-target","arm64-apple-macosx14.0","-Xlinker","-add_ast_path","-Xlinker","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/Ambeat.swiftmodule","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
 
-  "C.AmbientGen-arm64-apple-macosx26.0-debug.exe-entitlements":
+  "C.Ambeat-arm64-apple-macosx26.0-debug.exe-entitlements":
     tool: shell
-    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist"]
-    outputs: ["<AmbientGen-arm64-apple-macosx26.0-debug.exe-CodeSigning>"]
-    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/AmbientGen"
-    args: ["codesign","--force","--sign","-","--entitlements","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen-entitlement.plist","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen"]
+    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat-entitlement.plist"]
+    outputs: ["<Ambeat-arm64-apple-macosx26.0-debug.exe-CodeSigning>"]
+    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/Ambeat"
+    args: ["codesign","--force","--sign","-","--entitlements","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat-entitlement.plist","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat"]
 
-  "C.AmbientGen-arm64-apple-macosx26.0-debug.module":
+  "C.Ambeat-arm64-apple-macosx26.0-debug.module":
     tool: shell
-    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/DerivedSources/resource_bundle_accessor.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt","<AmbientGen-arm64-apple-macosx26.0-debug.module-resources>","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources"]
-    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AmbientGenApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/resource_bundle_accessor.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/AmbientGen.swiftmodule"]
-    description: "Compiling Swift Module 'AmbientGen' (4 sources)"
-    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","AmbientGen","-emit-dependencies","-emit-module","-emit-module-path","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/AmbientGen.swiftmodule","-output-file-map","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/output-file-map.json","-incremental","-c","@/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/AmbientGen.build/sources","-I","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx14.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j12","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE","-module-cache-path","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","AmbientGen_main","-swift-version","6","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","ambient_gen"]
+    inputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbeatApp.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/DerivedSources/resource_bundle_accessor.swift","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt","<Ambeat-arm64-apple-macosx26.0-debug.module-resources>","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/sources"]
+    outputs: ["/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AmbeatApp.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/AudioEngine.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/ContentView.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/resource_bundle_accessor.swift.o","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/Ambeat.swiftmodule"]
+    description: "Compiling Swift Module 'Ambeat' (4 sources)"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","Ambeat","-emit-dependencies","-emit-module","-emit-module-path","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules/Ambeat.swiftmodule","-output-file-map","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/output-file-map.json","-incremental","-c","@/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Ambeat.build/sources","-I","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx14.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j12","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_AVAILABLE","-module-cache-path","/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","Ambeat_main","-swift-version","6","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","ambient_gen"]
 
   "PackageStructure":
     tool: package-structure-tool

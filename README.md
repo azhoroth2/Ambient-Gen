@@ -14,7 +14,7 @@ A minimal, beautiful, and sound-reactive macOS menu bar utility designed to gene
 - **Sound-Reactive Visualizer**:
   - **Chladni Sand Patterns**: Procedural particle simulation vibrating based on active music frequencies.
   - **Pixel Ripples**: Sound-reactive waves that flare and dim dynamically.
-- **MacOS Integration**:
+- **Premium macOS Integration**:
   - **Menu Bar Utility**: Runs as a lightweight accessory application without cluttering your Dock.
   - **Borderless Floating Window**: Sleek, dark glassmorphism design with key focus transitions and smooth animations.
 
@@ -24,7 +24,9 @@ A minimal, beautiful, and sound-reactive macOS menu bar utility designed to gene
 
 ### Instant Install (Recommended)
 
-1. Download the latest release `.dmg` from the GitHub releases page.
+[![Download DMG](https://img.shields.io/badge/Download-Ambeat.dmg-blue?style=for-the-badge&logo=apple)](https://github.com/azhoroth2/Ambeat/releases/latest/download/Ambeat.dmg)
+
+1. Download the latest `.dmg` installer using the button above (or from the [Releases](https://github.com/azhoroth2/Ambeat/releases) page).
 2. Open the `.dmg` file and drag **Ambeat.app** into your `/Applications` directory.
 3. Open **Ambeat** from your Applications or Launchpad.
 

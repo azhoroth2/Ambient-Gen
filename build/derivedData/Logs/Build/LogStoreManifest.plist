@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>logFormatVersion</key>
+	<integer>12</integer>
+	<key>logs</key>
+	<dict>
+		<key>45B1DBB1-F8DD-49AF-B289-C6D146ABA100</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>45B1DBB1-F8DD-49AF-B289-C6D146ABA100.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>S</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>0</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>AmbientGen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>AmbientGen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Cleaning project AmbientGen with scheme AmbientGen and configuration Release</string>
+			<key>timeStartedRecording</key>
+			<real>804189298.42652905</real>
+			<key>timeStoppedRecording</key>
+			<real>804189298.86070502</real>
+			<key>title</key>
+			<string>Cleaning project AmbientGen with scheme AmbientGen and configuration Release</string>
+			<key>uniqueIdentifier</key>
+			<string>45B1DBB1-F8DD-49AF-B289-C6D146ABA100</string>
+		</dict>
+		<key>C8D23987-0DA6-4253-8686-E2164E29A0F2</key>
+		<dict>
+			<key>className</key>
+			<string>IDECommandLineBuildLog</string>
+			<key>documentTypeString</key>
+			<string>&lt;nil&gt;</string>
+			<key>domainType</key>
+			<string>Xcode.IDEActivityLogDomainType.BuildLog</string>
+			<key>fileName</key>
+			<string>C8D23987-0DA6-4253-8686-E2164E29A0F2.xcactivitylog</string>
+			<key>hasPrimaryLog</key>
+			<true/>
+			<key>primaryObservable</key>
+			<dict>
+				<key>highLevelStatus</key>
+				<string>E</string>
+				<key>totalNumberOfAnalyzerIssues</key>
+				<integer>0</integer>
+				<key>totalNumberOfErrors</key>
+				<integer>2</integer>
+				<key>totalNumberOfTestFailures</key>
+				<integer>0</integer>
+				<key>totalNumberOfWarnings</key>
+				<integer>0</integer>
+			</dict>
+			<key>schemeIdentifier-containerName</key>
+			<string>AmbientGen project</string>
+			<key>schemeIdentifier-schemeName</key>
+			<string>AmbientGen</string>
+			<key>schemeIdentifier-sharedScheme</key>
+			<integer>1</integer>
+			<key>signature</key>
+			<string>Building project AmbientGen with scheme AmbientGen and configuration Release</string>
+			<key>timeStartedRecording</key>
+			<real>804189298.86518097</real>
+			<key>timeStoppedRecording</key>
+			<real>804189302.97942996</real>
+			<key>title</key>
+			<string>Building project AmbientGen with scheme AmbientGen and configuration Release</string>
+			<key>uniqueIdentifier</key>
+			<string>C8D23987-0DA6-4253-8686-E2164E29A0F2</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

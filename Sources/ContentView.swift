@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var audioEngine = AudioEngine()
+    var audioEngine: AudioEngine
     @State private var isHoveringClose = false
     @State private var hostingWindow: NSWindow?
 
@@ -308,7 +308,7 @@ struct ContentView: View {
                         .onHover { hovering in
                             isHoveringClose = hovering
                         }
-                        .help("Quit AmbientGen")
+                        .help("Quit Ambeat")
                     }
                     Spacer()
                 }
@@ -502,5 +502,5 @@ struct TempoSlider: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(audioEngine: AudioEngine())
 }

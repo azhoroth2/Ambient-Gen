@@ -1,0 +1,36 @@
+{
+  "" : {
+    "const-values" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary.swiftconstvalues",
+    "dependencies" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary.d",
+    "diagnostics" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary.dia",
+    "emit-module-dependencies" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary-emit-module.dia",
+    "pch" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGen-primary.swiftdeps"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AmbientGenApp.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGenApp.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGenApp.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AmbientGenApp.o"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/AudioEngine.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AudioEngine.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AudioEngine.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/AudioEngine.o"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/ContentView.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/WidgetStateBridge.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/WidgetStateBridge.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/WidgetStateBridge.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/WidgetStateBridge.o"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/WidgetView.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/WidgetView.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/WidgetView.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGen.build/Objects-normal/arm64/WidgetView.o"
+  }
+}

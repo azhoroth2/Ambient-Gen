@@ -1,5 +1,6 @@
 @preconcurrency import AVFoundation
 import Observation
+import MediaPlayer
 
 /// Shared DSP state read by the real-time audio thread and written by the main thread.
 ///
@@ -263,7 +264,64 @@ final class AudioEngine: @unchecked Sendable {
 
     // MARK: - Lifecycle
 
-    init() {}
+    init() {
+        setupRemoteCommands()
+    }
+
+    // MARK: - Remote Controls
+
+    private func setupRemoteCommands() {
+        let commandCenter = MPRemoteCommandCenter.shared()
+        
+        commandCenter.playCommand.isEnabled = true
+        commandCenter.playCommand.addTarget { [weak self] event in
+            guard let self = self else { return .commandFailed }
+            Task { @MainActor in
+                self.start()
+            }
+            return .success
+        }
+        
+        commandCenter.pauseCommand.isEnabled = true
+        commandCenter.pauseCommand.addTarget { [weak self] event in
+            guard let self = self else { return .commandFailed }
+            Task { @MainActor in
+                self.stop()
+            }
+            return .success
+        }
+        
+        commandCenter.togglePlayPauseCommand.isEnabled = true
+        commandCenter.togglePlayPauseCommand.addTarget { [weak self] event in
+            guard let self = self else { return .commandFailed }
+            Task { @MainActor in
+                self.toggle()
+            }
+            return .success
+        }
+        
+        commandCenter.stopCommand.isEnabled = true
+        commandCenter.stopCommand.addTarget { [weak self] event in
+            guard let self = self else { return .commandFailed }
+            Task { @MainActor in
+                self.stop()
+            }
+            return .success
+        }
+    }
+
+    @MainActor
+    private func updateNowPlaying() {
+        let nowPlayingInfoCenter = MPNowPlayingInfoCenter.default()
+        nowPlayingInfoCenter.playbackState = isPlaying ? .playing : .stopped
+        
+        var nowPlayingInfo = [String: Any]()
+        nowPlayingInfo[MPMediaItemPropertyTitle] = "Ambeat"
+        nowPlayingInfo[MPMediaItemPropertyArtist] = "Ambient Generator"
+        nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = true
+        
+        nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+    }
 
     // MARK: - Public API
 
@@ -284,6 +342,7 @@ final class AudioEngine: @unchecked Sendable {
         }
         
         isPlaying = true
+        updateNowPlaying()
         
         patternTimer = Timer.scheduledTimer(withTimeInterval: 180.0, repeats: true) { [weak self] _ in
             Task { @MainActor in
@@ -321,6 +380,7 @@ final class AudioEngine: @unchecked Sendable {
         
         guard isPlaying else { return }
         isPlaying = false
+        updateNowPlaying()
         
         fadeTask = Task {
             let duration = 1.5 // seconds

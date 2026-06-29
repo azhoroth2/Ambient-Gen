@@ -1,0 +1,26 @@
+{
+  "" : {
+    "const-values" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary.swiftconstvalues",
+    "dependencies" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary.d",
+    "diagnostics" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary.dia",
+    "emit-module-dependencies" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary-emit-module.dia",
+    "pch" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget-primary.swiftdeps"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/Sources/WidgetStateBridge.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/WidgetStateBridge.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/WidgetStateBridge.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/WidgetStateBridge.o"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/WidgetSources/AmbientGenWidget.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/AmbientGenWidget.o"
+  },
+  "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/WidgetSources/TogglePlaybackIntent.swift" : {
+    "index-unit-output-path" : "/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/TogglePlaybackIntent.o",
+    "llvm-bc" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/TogglePlaybackIntent.bc",
+    "object" : "/Users/sstefaniuk/Documents/GitHub/Ambigen/Ambient-Gen/build/derivedData/Build/Intermediates.noindex/AmbientGen.build/Release/AmbientGenWidget.build/Objects-normal/arm64/TogglePlaybackIntent.o"
+  }
+}

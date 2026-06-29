@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'AmbientGen' in project 'AmbientGen'
+➜ Explicit dependency on target 'AmbientGenWidget' in project 'AmbientGen'
+Target 'AmbientGenWidget' in project 'AmbientGen' (no dependencies)
